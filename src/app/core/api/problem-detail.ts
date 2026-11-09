@@ -57,6 +57,9 @@ const CODE_TEXT: Record<string, string> = {
   EMAIL_TAKEN: 'هذا البريد مستخدم لحساب آخر.',
   CANNOT_DEACTIVATE_SELF: 'لا يمكنك إيقاف حسابك.',
   NO_QUOTE: 'أرسل عرض السعر أولًا قبل تسجيل الدفعات.',
+  NO_WORK_FILES: 'ارفع ملف العمل أولًا قبل الإرسال للمراجعة.',
+  NO_DELIVERABLES: 'أرسل ملفًا واحدًا على الأقل للعميل قبل التسليم.',
+  PAYMENT_EXCEEDS_BALANCE: 'المبلغ أكبر من المتبقي على العميل.',
 };
 
 const STATUS_TEXT: Record<number, string> = {

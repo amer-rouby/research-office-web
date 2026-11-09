@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideClipboardCheck,
+  LucideAlarmClock,
   LucideClock,
   LucideDynamicIcon,
   LucideFileWarning,
@@ -20,8 +21,8 @@ import { EmptyState, LoadError, Loading } from '@shared/ui/state-views';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { AdminOrdersApi } from './orders/admin-orders.api';
 import { ORDER_COLUMNS } from './orders/order-columns';
+import { formatMoney } from '@shared/pipes/format.pipes';
 
-/** What needs attention now: each tile opens the list filtered by its status. */
 /** Icon chip colours by meaning. */
 const TONE = {
   info: 'bg-brand-50 text-primary dark:bg-brand-900',
@@ -121,6 +122,48 @@ const TILES: readonly {
       }
     </div>
 
+    @if (stats.data(); as s) {
+      <!-- money and deadlines -->
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        @for (m of s.money; track m.currency) {
+          <div class="rounded-2xl border bg-surface-raised p-5 shadow-soft">
+            <p class="text-sm text-ink-muted">المحصّل هذا الشهر</p>
+            <p class="mt-1 text-2xl font-bold text-success">
+              <bdi>{{ money(m.collectedThisMonth, m.currency) }}</bdi>
+            </p>
+            <p class="mt-3 text-sm text-ink-muted">مستحق على العملاء</p>
+            <p
+              class="mt-1 text-lg font-semibold"
+              [class]="m.outstanding > 0 ? 'text-warning' : 'text-ink'"
+            >
+              <bdi>{{ money(m.outstanding, m.currency) }}</bdi>
+            </p>
+          </div>
+        } @empty {
+          <div class="rounded-2xl border bg-surface-raised p-5 text-sm text-ink-muted shadow-soft">
+            لا توجد مدفوعات أو مستحقات بعد.
+          </div>
+        }
+        <a
+          routerLink="/admin/requests"
+          [queryParams]="{ status: 'IN_PROGRESS' }"
+          class="flex items-center gap-4 rounded-2xl border bg-surface-raised p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary"
+        >
+          <span
+            class="grid size-12 shrink-0 place-items-center rounded-xl"
+            [class]="s.dueSoon ? tone.danger : tone.success"
+          >
+            <svg [lucideIcon]="dueIcon" size="22" aria-hidden="true"></svg>
+          </span>
+          <div>
+            <p class="text-sm text-ink-muted">تسليمها خلال 3 أيام</p>
+            <p class="text-3xl font-bold text-ink">{{ s.dueSoon }}</p>
+            <p class="text-xs text-ink-subtle">طلبات جارية قرب موعدها</p>
+          </div>
+        </a>
+      </div>
+    }
+
     <ro-card title="أحدث الطلبات" flush>
       <a actions routerLink="/admin/requests" class="text-sm text-primary hover:underline"
         >عرض الكل</a
@@ -151,6 +194,12 @@ export class DashboardPage {
   protected readonly stats = createLoader(() => this.api.stats());
   protected readonly recent = createLoader(() => this.api.list({ page: 0, size: 6 }));
   protected readonly greeting = computed(() => `أهلًا ${this.user()?.fullName ?? ''}`);
+  protected readonly tone = TONE;
+  protected readonly dueIcon = LucideAlarmClock;
+  protected money(price: number, currency: string): string {
+    return formatMoney({ price, currency });
+  }
+
   protected readonly tiles = computed(() => {
     const by = this.stats.data()?.byStatus;
     return TILES.map((t) => ({

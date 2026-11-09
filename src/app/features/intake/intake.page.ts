@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   LucideBellRing,
   LucideChevronDown,
@@ -179,6 +179,7 @@ const localIso = (d: Date) =>
                       >
                         <input
                           type="radio"
+                          [attr.aria-label]="s.nameAr"
                           class="mt-1 size-4 shrink-0 accent-primary"
                           formControlName="serviceId"
                           [value]="s.id"
@@ -372,6 +373,7 @@ const localIso = (d: Date) =>
 export class IntakePage {
   private readonly api = inject(PublicOrdersApi);
   private readonly office = inject(OfficeStore);
+  private readonly router = inject(Router);
 
   protected readonly promises = PROMISES;
   protected readonly next = NEXT;
@@ -445,6 +447,8 @@ export class IntakePage {
       .pipe(
         switchMap((order) => {
           this.created.set(order);
+          // the form is done: drop ?service=&details= so a refresh does not refill it
+          void this.router.navigate([], { queryParams: {}, replaceUrl: true });
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return this.files().length ? this.api.upload(order.trackingToken, this.files()) : of([]);
         }),

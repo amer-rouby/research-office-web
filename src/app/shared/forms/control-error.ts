@@ -9,6 +9,8 @@ export function controlErrorMessage(errors: ValidationErrors | null): string | n
   if (errors['email']) return 'أدخل بريدًا إلكترونيًا صحيحًا';
   if (errors['minlength']) return `الحد الأدنى ${errors['minlength'].requiredLength} أحرف`;
   if (errors['maxlength']) return `الحد الأقصى ${errors['maxlength'].requiredLength} حرفًا`;
+  if (errors['max']) return `الحد الأقصى ${errors['max'].max}`;
+  if (errors['min']) return `الحد الأدنى ${errors['min'].min}`;
   if (errors['pattern']) return 'الصيغة غير صحيحة';
   if (errors['server']) return String(errors['server']);
   return 'القيمة غير صحيحة';

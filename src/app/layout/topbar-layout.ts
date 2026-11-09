@@ -12,7 +12,7 @@ import { UserMenu } from './user-menu';
   host: { class: 'flex min-h-dvh flex-col' },
   template: `
     <header
-      class="flex h-16 items-center justify-between gap-4 border-b bg-surface-raised px-4 sm:px-6"
+      class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-surface-raised/90 px-4 backdrop-blur sm:px-6"
     >
       <ro-brand />
       <div class="flex items-center gap-3">

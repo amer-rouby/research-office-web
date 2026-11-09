@@ -28,6 +28,39 @@ import { AdminOrdersApi } from './admin-orders.api';
 import { PaymentsCard } from './payments-card';
 import { Dialogs } from '@shared/ui/dialog.service';
 
+/** Steps that need a confirmation, with what they mean for the client. */
+const CONFIRM: Partial<
+  Record<OrderStatus, { title: string; message: string; confirmText: string; danger?: boolean }>
+> = {
+  DELIVERED: {
+    title: 'تسليم الطلب للعميل؟',
+    message: 'سيظهر للعميل أن عمله جاهز ويمكنه تحميل الملفات المرسلة له.',
+    confirmText: 'تسليم',
+  },
+  CLOSED: {
+    title: 'إغلاق الطلب؟',
+    message: 'لن تظهر للطلب خطوات أخرى بعد الإغلاق.',
+    confirmText: 'إغلاق الطلب',
+  },
+  CANCELLED: {
+    title: 'إلغاء الطلب؟',
+    message: 'سيتم إيقاف الطلب نهائيًا ولن يمكن إكماله.',
+    confirmText: 'إلغاء الطلب',
+    danger: true,
+  },
+};
+
+const ACTION_ORDER: OrderStatus[] = [
+  'ACCEPTED',
+  'DELIVERED',
+  'IN_PROGRESS',
+  'IN_REVIEW',
+  'REVISION',
+  'NEW',
+  'CLOSED',
+  'CANCELLED',
+];
+
 const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
 
 /** Everything about one request: client, quote, status actions, notes, files, history. */
@@ -245,7 +278,7 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
                     [disabled]="!expertId() || expertId() === o.assignedExpert?.id || busy()"
                     (click)="assign()"
                   >
-                    إسناد
+                    {{ o.assignedExpert ? 'تغيير' : 'إسناد' }}
                   </button>
                 </div>
               } @else {
@@ -274,8 +307,8 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
                   <button
                     roButton
                     size="sm"
-                    [variant]="s === 'CANCELLED' ? 'danger' : 'primary'"
-                    [disabled]="busy()"
+                    [variant]="s === 'CANCELLED' ? 'danger' : $first ? 'primary' : 'secondary'"
+                    [disabled]="busy() || (s === 'DELIVERED' && !hasDeliverable())"
                     (click)="move(s)"
                   >
                     {{ label(s) }}
@@ -291,6 +324,11 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
                   حفظ الملاحظة فقط
                 </button>
               </div>
+              @if (actions().includes('DELIVERED') && !hasDeliverable()) {
+                <p class="rounded-xl bg-warning-soft px-3 py-2 text-xs text-ink">
+                  للتسليم: اضغط «للعميل» بجانب ملف واحد على الأقل في قسم الملفات.
+                </p>
+              }
               @if (!actions().length) {
                 <p class="text-xs text-ink-subtle">لا توجد خطوات تالية لهذه الحالة.</p>
               }
@@ -327,8 +365,18 @@ export class OrderDetailPage {
   });
 
   /** Next statuses offered as buttons; quoting has its own form. */
+  protected readonly hasDeliverable = computed(() =>
+    (this.order.data()?.files ?? []).some((f) => f.kind === 'DELIVERABLE'),
+  );
+  protected readonly remaining = computed(() => {
+    const o = this.order.data();
+    return o?.quote ? Math.max(o.quote.price - o.paidTotal, 0) : 0;
+  });
   protected readonly actions = computed(() =>
-    (this.order.data()?.nextStatuses ?? []).filter((s) => s !== 'QUOTED'),
+    (this.order.data()?.nextStatuses ?? [])
+      .filter((s) => s !== 'QUOTED')
+      // the main forward step first; closing and cancelling last so a double click can't hit them
+      .sort((a, b) => ACTION_ORDER.indexOf(a) - ACTION_ORDER.indexOf(b)),
   );
   protected readonly whatsapp = computed(() => {
     const o = this.order.data();
@@ -339,6 +387,7 @@ export class OrderDetailPage {
 
   constructor() {
     this.staff.reload();
+    effect(() => this.expertId.set(this.order.data()?.assignedExpert?.id ?? ''));
     effect(() => {
       this.id();
       this.order.reload();
@@ -372,15 +421,14 @@ export class OrderDetailPage {
           visibleToClient: this.visibleToClient(),
         }),
       );
-    if (status !== 'CANCELLED') return change();
-    this.dialogs
-      .confirm({
-        title: 'إلغاء الطلب؟',
-        message: 'سيتم إيقاف الطلب نهائيًا ولن يمكن إكماله.',
-        confirmText: 'إلغاء الطلب',
-        danger: true,
-      })
-      .subscribe((ok) => ok && change());
+    const ask = CONFIRM[status];
+    if (!ask) return change();
+    const owed = this.remaining();
+    const message =
+      status === 'CLOSED' && owed > 0
+        ? `${ask.message} تنبيه: ما زال على العميل ${owed} ${this.order.data()?.quote?.currency ?? ''}.`
+        : ask.message;
+    this.dialogs.confirm({ ...ask, message }).subscribe((ok) => ok && change());
   }
 
   protected saveNote(): void {
@@ -399,7 +447,7 @@ export class OrderDetailPage {
   }
 
   protected assign(): void {
-    this.run(this.api.assign(this.id(), this.expertId()), () => this.expertId.set(''));
+    this.run(this.api.assign(this.id(), this.expertId()));
   }
 
   protected publish(file: FileView): void {

@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { Dialogs } from '@shared/ui/dialog.service';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideTrash2 } from '@lucide/angular';
@@ -115,8 +115,8 @@ export const PAYMENT_METHOD_LABEL: Record<Method, string> = {
               </button>
             </div>
           </form>
-        } @else {
-          <button roButton variant="secondary" (click)="showForm.set(true)">+ تسجيل دفعة</button>
+        } @else if (remaining() > 0) {
+          <button roButton variant="secondary" (click)="openForm()">+ تسجيل دفعة</button>
         }
       </div>
     </ro-card>
@@ -139,6 +139,21 @@ export class PaymentsCard {
     method: ['BANK_TRANSFER' as Method, Validators.required],
     note: ['', Validators.maxLength(500)],
   });
+
+  /** What the client still owes; the form starts with it and cannot exceed it. */
+  protected readonly remaining = computed(() =>
+    Math.max(Math.round((this.quote().price - this.order().paidTotal) * 100) / 100, 0),
+  );
+
+  protected openForm(): void {
+    this.form.controls.amount.setValidators([
+      Validators.required,
+      Validators.min(0.01),
+      Validators.max(this.remaining()),
+    ]);
+    this.form.patchValue({ amount: this.remaining() });
+    this.showForm.set(true);
+  }
 
   protected money(p: PaymentView) {
     return { price: p.amount, currency: p.currency };

@@ -29,6 +29,18 @@ export class AuthSessionStore {
   readonly user = computed(() => this.state()?.user ?? null);
   readonly isAuthenticated = computed(() => this.state() !== null);
 
+  constructor() {
+    // Keep every open tab on the same session: refresh tokens rotate, so a tab holding an old one
+    // would otherwise be signed out when it next refreshes.
+    try {
+      window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY) this.state.set(readStored());
+      });
+    } catch {
+      // no window (tests/SSR): single-tab behaviour
+    }
+  }
+
   set(response: TokenResponse): void {
     this.write({
       accessToken: response.accessToken,

@@ -13,7 +13,7 @@ const MAX_BYTES = 50 * 1024 * 1024;
   imports: [LucideCloudUpload, LucideX, BytesPipe],
   template: `
     <label
-      class="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors hover:border-primary hover:bg-brand-50/50 dark:hover:bg-brand-900/30"
+      class="relative flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors focus-within:border-primary hover:border-primary hover:bg-brand-50/50 dark:hover:bg-brand-900/30"
       [class.border-primary]="dragging()"
       [class.bg-brand-50]="dragging()"
       (dragover)="$event.preventDefault(); dragging.set(true)"

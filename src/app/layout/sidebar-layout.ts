@@ -26,7 +26,9 @@ const ACTIVE = 'bg-brand-50 font-medium !text-primary dark:bg-brand-900';
   ],
   host: { class: 'flex min-h-dvh' },
   template: `
-    <aside class="hidden w-64 shrink-0 flex-col border-e bg-surface-raised md:flex">
+    <aside
+      class="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-e bg-surface-raised md:flex"
+    >
       <div class="flex h-16 items-center border-b px-4"><ro-brand /></div>
       <nav class="flex flex-1 flex-col gap-1 p-3" [attr.aria-label]="areaTitle()">
         @for (item of nav(); track item.path) {
@@ -44,7 +46,7 @@ const ACTIVE = 'bg-brand-50 font-medium !text-primary dark:bg-brand-900';
     </aside>
     <div class="flex min-w-0 flex-1 flex-col">
       <header
-        class="flex h-16 items-center justify-between gap-4 border-b bg-surface-raised px-4 sm:px-6"
+        class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b bg-surface-raised/90 px-4 backdrop-blur sm:px-6"
       >
         <div class="md:hidden"><ro-brand /></div>
         <span class="hidden font-medium text-ink md:inline">{{ areaTitle() }}</span>

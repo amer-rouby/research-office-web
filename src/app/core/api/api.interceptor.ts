@@ -26,6 +26,10 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const toError = (error: unknown) =>
     throwError(() => (error instanceof HttpErrorResponse ? toApiError(error) : error));
 
+  const isPublic = req.url.startsWith(`${apiUrl}/public/`);
+  if (isPublic) {
+    return next(req).pipe(catchError(toError));
+  }
   const request = req.headers.has('Authorization') ? req : withToken(req, session.token());
 
   return next(request).pipe(
