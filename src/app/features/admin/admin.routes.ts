@@ -5,7 +5,7 @@ import { SidebarLayout } from '@layout/sidebar-layout';
 import { PlaceholderPage } from '@shared/ui/placeholder-page';
 
 const nav: readonly NavItem[] = [
-  { label: 'لوحة التحكم', path: '/admin', icon: LucideLayoutDashboard },
+  { label: 'لوحة التحكم', path: '/admin', icon: LucideLayoutDashboard, exact: true },
   { label: 'الطلبات', path: '/admin/requests', icon: LucideClipboardList },
   { label: 'الخبراء', path: '/admin/experts', icon: LucideUsers },
 ];
