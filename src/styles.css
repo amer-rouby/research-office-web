@@ -1,0 +1,164 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens.
+ * Screens use ONLY these tokens (bg-surface, text-ink, bg-primary, ...).
+ * Tailwind's default colour palette is removed below, so a hardcoded
+ * colour utility such as `bg-blue-500` simply does not exist.
+ */
+
+/* Dark mode is driven by <html data-theme="dark">, not the OS setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  /* Brand: deep teal */
+  --brand-50: oklch(0.97 0.02 190);
+  --brand-100: oklch(0.93 0.04 190);
+  --brand-200: oklch(0.86 0.07 190);
+  --brand-300: oklch(0.76 0.09 190);
+  --brand-400: oklch(0.65 0.1 192);
+  --brand-500: oklch(0.55 0.1 194);
+  --brand-600: oklch(0.47 0.09 196);
+  --brand-700: oklch(0.4 0.08 198);
+  --brand-800: oklch(0.33 0.06 200);
+  --brand-900: oklch(0.26 0.05 202);
+
+  /* Accent: warm gold */
+  --accent-50: oklch(0.98 0.02 85);
+  --accent-100: oklch(0.95 0.05 85);
+  --accent-200: oklch(0.9 0.09 84);
+  --accent-300: oklch(0.84 0.12 82);
+  --accent-400: oklch(0.78 0.14 78);
+  --accent-500: oklch(0.72 0.14 72);
+  --accent-600: oklch(0.63 0.13 66);
+  --accent-700: oklch(0.53 0.11 60);
+  --accent-800: oklch(0.44 0.09 56);
+  --accent-900: oklch(0.36 0.07 52);
+
+  /* Semantic roles */
+  --primary: var(--brand-600);
+  --primary-hover: var(--brand-700);
+  --on-primary: oklch(0.99 0 0);
+
+  --surface: oklch(0.985 0.003 200);
+  --surface-raised: oklch(1 0 0);
+  --surface-sunken: oklch(0.955 0.006 200);
+  --border: oklch(0.9 0.008 200);
+
+  --ink: oklch(0.24 0.02 220);
+  --ink-muted: oklch(0.45 0.02 220);
+  --ink-subtle: oklch(0.6 0.015 220);
+  --ink-inverse: oklch(0.98 0.003 200);
+
+  --success: oklch(0.55 0.13 150);
+  --success-soft: oklch(0.95 0.04 150);
+  --warning: oklch(0.68 0.15 70);
+  --warning-soft: oklch(0.96 0.05 85);
+  --danger: oklch(0.55 0.19 27);
+  --danger-soft: oklch(0.95 0.03 27);
+
+  --focus-ring: var(--brand-400);
+}
+
+:root[data-theme='dark'] {
+  --primary: var(--brand-400);
+  --primary-hover: var(--brand-300);
+  --on-primary: oklch(0.18 0.02 200);
+
+  --surface: oklch(0.18 0.012 220);
+  --surface-raised: oklch(0.22 0.014 220);
+  --surface-sunken: oklch(0.15 0.01 220);
+  --border: oklch(0.32 0.015 220);
+
+  --ink: oklch(0.94 0.006 200);
+  --ink-muted: oklch(0.76 0.012 210);
+  --ink-subtle: oklch(0.6 0.012 210);
+  --ink-inverse: oklch(0.2 0.015 220);
+
+  --success: oklch(0.72 0.14 150);
+  --success-soft: oklch(0.3 0.05 150);
+  --warning: oklch(0.8 0.14 80);
+  --warning-soft: oklch(0.32 0.05 75);
+  --danger: oklch(0.7 0.17 25);
+  --danger-soft: oklch(0.3 0.06 25);
+
+  --focus-ring: var(--brand-300);
+}
+
+@theme {
+  /* Drop Tailwind's built-in palette: only the tokens below are available. */
+  --color-*: initial;
+  --font-sans: 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent-800: var(--accent-800);
+  --color-accent-900: var(--accent-900);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border: var(--border);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-ink-inverse: var(--ink-inverse);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-focus-ring: var(--focus-ring);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
