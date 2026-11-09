@@ -12,7 +12,7 @@ import { TOOLS } from './tools';
     @for (t of tools; track t.path) {
       <a
         [routerLink]="['/tools', t.path]"
-        class="group flex flex-col gap-3 rounded-2xl border bg-surface-raised p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
+        class="group flex flex-col gap-3 rounded-2xl border bg-surface-raised p-6 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lift"
       >
         <span class="grid size-12 place-items-center rounded-xl bg-accent-100 text-accent-800">
           <svg [lucideIcon]="t.icon" size="22" aria-hidden="true"></svg>

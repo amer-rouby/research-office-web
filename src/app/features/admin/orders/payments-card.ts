@@ -1,7 +1,9 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
+import { Dialogs } from '@shared/ui/dialog.service';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideTrash2 } from '@lucide/angular';
 import type { OrderDetail, PaymentRequest, PaymentView, Quote } from '@core/api/api-types';
+import { DatePicker } from '@shared/forms/date-picker';
 import { FormField } from '@shared/forms/form-field';
 import { Input } from '@shared/forms/input';
 import { DatePipe, MoneyPipe } from '@shared/pipes/format.pipes';
@@ -25,6 +27,7 @@ export const PAYMENT_METHOD_LABEL: Record<Method, string> = {
   selector: 'ro-payments-card',
   imports: [
     ReactiveFormsModule,
+    DatePicker,
     Card,
     Button,
     FormField,
@@ -71,46 +74,50 @@ export const PAYMENT_METHOD_LABEL: Record<Method, string> = {
           </ul>
         }
 
-        <form
-          class="grid grid-cols-2 gap-3 border-t pt-4"
-          [formGroup]="form"
-          (ngSubmit)="submit()"
-          novalidate
-        >
-          <ro-form-field label="المبلغ" [control]="form.controls.amount" required>
-            <input
-              roInput
-              type="number"
-              min="0.01"
-              step="0.01"
-              formControlName="amount"
-              dir="ltr"
-            />
-          </ro-form-field>
-          <ro-form-field label="التاريخ" [control]="form.controls.paidOn" required>
-            <input roInput type="date" formControlName="paidOn" dir="ltr" />
-          </ro-form-field>
-          <ro-form-field
-            label="الطريقة"
-            class="col-span-2"
-            [control]="form.controls.method"
-            required
+        @if (showForm()) {
+          <form
+            class="grid grid-cols-2 gap-3 border-t pt-4"
+            [formGroup]="form"
+            (ngSubmit)="submit()"
+            novalidate
           >
-            <select roInput formControlName="method">
-              @for (m of methods; track m) {
-                <option [value]="m">{{ methodLabel[m] }}</option>
-              }
-            </select>
-          </ro-form-field>
-          <ro-form-field label="ملاحظة" class="col-span-2" [control]="form.controls.note">
-            <input roInput formControlName="note" placeholder="مثل: الدفعة المقدمة" />
-          </ro-form-field>
-          <div class="col-span-2">
-            <button roButton type="submit" variant="secondary" block [loading]="busy()">
-              تسجيل دفعة
-            </button>
-          </div>
-        </form>
+            <ro-form-field label="المبلغ" [control]="form.controls.amount" required>
+              <input
+                roInput
+                type="number"
+                min="0.01"
+                step="0.01"
+                formControlName="amount"
+                dir="ltr"
+              />
+            </ro-form-field>
+            <ro-form-field label="التاريخ" [control]="form.controls.paidOn" required>
+              <ro-date-picker formControlName="paidOn" />
+            </ro-form-field>
+            <ro-form-field
+              label="الطريقة"
+              class="col-span-2"
+              [control]="form.controls.method"
+              required
+            >
+              <select roInput formControlName="method">
+                @for (m of methods; track m) {
+                  <option [value]="m">{{ methodLabel[m] }}</option>
+                }
+              </select>
+            </ro-form-field>
+            <ro-form-field label="ملاحظة" class="col-span-2" [control]="form.controls.note">
+              <input roInput formControlName="note" placeholder="مثل: الدفعة المقدمة" />
+            </ro-form-field>
+            <div class="col-span-2">
+              <button roButton type="submit" variant="secondary" block [loading]="busy()">
+                تسجيل دفعة
+              </button>
+            </div>
+          </form>
+        } @else {
+          <button roButton variant="secondary" (click)="showForm.set(true)">+ تسجيل دفعة</button>
+        }
       </div>
     </ro-card>
   `,
@@ -122,10 +129,12 @@ export class PaymentsCard {
   readonly add = output<PaymentRequest>();
   readonly remove = output<PaymentView>();
 
+  private readonly dialogs = inject(Dialogs);
+  protected readonly showForm = signal(false);
   protected readonly methodLabel = PAYMENT_METHOD_LABEL;
   protected readonly methods = Object.keys(PAYMENT_METHOD_LABEL) as Method[];
   protected readonly form = inject(NonNullableFormBuilder).group({
-    amount: [0, [Validators.required, Validators.min(0.01)]],
+    amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
     paidOn: [new Date().toISOString().slice(0, 10), Validators.required],
     method: ['BANK_TRANSFER' as Method, Validators.required],
     note: ['', Validators.maxLength(500)],
@@ -141,12 +150,20 @@ export class PaymentsCard {
       return;
     }
     const v = this.form.getRawValue();
-    this.add.emit({ ...v, note: v.note || null });
-    this.form.patchValue({ amount: 0, note: '' });
+    this.add.emit({ ...v, amount: Number(v.amount), note: v.note || null });
+    this.form.patchValue({ amount: null, note: '' });
+    this.showForm.set(false);
     this.form.markAsUntouched();
   }
 
   protected confirmRemove(p: PaymentView): void {
-    if (confirm('حذف هذه الدفعة؟ استخدمه فقط لتصحيح خطأ في التسجيل.')) this.remove.emit(p);
+    this.dialogs
+      .confirm({
+        title: 'حذف الدفعة؟',
+        message: 'استخدم الحذف فقط لتصحيح دفعة سُجلت بالخطأ.',
+        confirmText: 'حذف',
+        danger: true,
+      })
+      .subscribe((ok) => ok && this.remove.emit(p));
   }
 }

@@ -14,6 +14,7 @@ import { Card } from '@shared/ui/card';
 import { PageHeader } from '@shared/ui/page-header';
 import { EmptyState, LoadError, Loading } from '@shared/ui/state-views';
 import { StaffApi } from './staff.api';
+import { Dialogs } from '@shared/ui/dialog.service';
 
 const COLUMNS: readonly Column<StaffView>[] = [
   { key: 'name', header: 'الاسم', value: (s) => s.fullName, class: 'font-medium' },
@@ -129,6 +130,7 @@ const COLUMNS: readonly Column<StaffView>[] = [
 })
 export class StaffPage {
   private readonly api = inject(StaffApi);
+  private readonly dialogs = inject(Dialogs);
   protected readonly me = inject(AuthSessionStore).user;
   protected readonly columns = COLUMNS;
   protected readonly staff = createLoader(() => this.api.list());
@@ -162,13 +164,17 @@ export class StaffPage {
   }
 
   protected resetPassword(s: StaffView): void {
-    const password = prompt(`كلمة مرور جديدة لـ ${s.fullName} (10 أحرف على الأقل):`);
-    if (!password) return;
-    if (password.length < 10) {
-      this.error.set('كلمة المرور يجب أن تكون 10 أحرف على الأقل.');
-      return;
-    }
-    this.act(this.api.resetPassword(s.id, password), 'تم تغيير كلمة المرور.');
+    this.dialogs
+      .prompt({
+        title: 'تغيير كلمة المرور',
+        message: `كلمة مرور جديدة لـ ${s.fullName}. أرسلها له بطريقة آمنة.`,
+        label: 'كلمة المرور الجديدة',
+        minLength: 10,
+      })
+      .subscribe(
+        (password) =>
+          password && this.act(this.api.resetPassword(s.id, password), 'تم تغيير كلمة المرور.'),
+      );
   }
 
   private act(call: import('rxjs').Observable<unknown>, notice: string | null, after?: () => void) {

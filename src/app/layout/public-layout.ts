@@ -45,6 +45,7 @@ const LINKS = [
         </nav>
         <div class="flex items-center gap-2">
           <ro-theme-toggle />
+          <a roButton size="sm" variant="ghost" routerLink="/login">دخول الفريق</a>
           <a roButton size="sm" routerLink="/request">اطلب خدمة</a>
         </div>
       </div>
@@ -57,7 +58,7 @@ const LINKS = [
         [href]="link"
         target="_blank"
         rel="noopener"
-        class="fixed bottom-5 start-5 z-30 grid size-14 place-items-center rounded-full bg-success text-white shadow-lg transition-transform hover:scale-105"
+        class="fixed bottom-5 start-5 z-30 grid size-14 place-items-center rounded-full bg-success text-white shadow-lift transition-transform hover:scale-105"
         aria-label="تواصل معنا على واتساب"
       >
         <svg lucideMessageCircle size="26" aria-hidden="true"></svg>

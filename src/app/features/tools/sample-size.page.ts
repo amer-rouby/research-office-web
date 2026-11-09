@@ -49,7 +49,7 @@ import { ToolPage } from './tool-page';
 
       <ng-container result>
         @if (result(); as r) {
-          <div class="rounded-2xl border bg-surface-raised p-6 text-center shadow-sm">
+          <div class="rounded-2xl border bg-surface-raised p-6 text-center shadow-soft">
             <p class="text-sm text-ink-muted">حجم العينة المطلوب</p>
             <p class="mt-1 text-5xl font-bold text-primary">{{ r.sample }}</p>
             <p class="mt-1 text-sm text-ink-muted">مشاركًا</p>

@@ -65,7 +65,7 @@ describe('apiInterceptor', () => {
     const error = (await result.catch((e: unknown) => e)) as ApiError;
     expect(error).toBeInstanceOf(ApiError);
     expect(error.status).toBe(404);
-    expect(error.message).toBe('الطلب غير موجود');
+    expect(error.message).toBe('العنصر المطلوب غير موجود.');
     expect(error.problem.code).toBe('NOT_FOUND');
   });
 

@@ -20,7 +20,7 @@ export class ApiError extends Error {
     readonly status: number,
     readonly problem: ProblemDetail,
   ) {
-    super(problem.detail ?? problem.title ?? `HTTP ${status}`);
+    super(arabicMessage(status, problem));
     this.name = 'ApiError';
   }
 
@@ -35,6 +35,48 @@ export class ApiError extends Error {
   get isValidation(): boolean {
     return this.status === 400 || this.status === 422;
   }
+}
+
+/** User-facing text for each backend error code (backend details stay English for logs). */
+const CODE_TEXT: Record<string, string> = {
+  BAD_CREDENTIALS: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+  BAD_REFRESH_TOKEN: 'انتهت الجلسة، سجّل الدخول مرة أخرى.',
+  VALIDATION: 'راجع البيانات المدخلة.',
+  NOT_FOUND: 'العنصر المطلوب غير موجود.',
+  INVALID_TRANSITION: 'لا يمكن نقل الطلب لهذه المرحلة الآن.',
+  SERVICE_UNAVAILABLE: 'هذه الخدمة غير متاحة حاليًا.',
+  FILE_EMPTY: 'الملف فارغ.',
+  FILE_TOO_LARGE: 'حجم الملف أكبر من 50 ميجا.',
+  FILE_TYPE_NOT_ALLOWED: 'نوع الملف غير مسموح.',
+  NO_FILES: 'أرفق ملفًا واحدًا على الأقل.',
+  ORDER_CLOSED: 'هذا الطلب مغلق.',
+  USE_QUOTE: 'استخدم نموذج عرض السعر لإرسال السعر.',
+  INVALID_FILE_KIND: 'نوع الرفع غير صحيح.',
+  EXPERT_UNAVAILABLE: 'اختر خبيرًا نشطًا.',
+  FILE_NOT_INTERNAL: 'هذا الملف ظاهر للعميل بالفعل.',
+  EMAIL_TAKEN: 'هذا البريد مستخدم لحساب آخر.',
+  CANNOT_DEACTIVATE_SELF: 'لا يمكنك إيقاف حسابك.',
+  NO_QUOTE: 'أرسل عرض السعر أولًا قبل تسجيل الدفعات.',
+};
+
+const STATUS_TEXT: Record<number, string> = {
+  400: 'البيانات المدخلة غير صحيحة.',
+  401: 'انتهت الجلسة، سجّل الدخول مرة أخرى.',
+  403: 'ليس لديك صلاحية لهذا الإجراء.',
+  404: 'العنصر المطلوب غير موجود.',
+  409: 'تعارض في البيانات، حدّث الصفحة وحاول مرة أخرى.',
+  413: 'حجم الملفات أكبر من المسموح.',
+  422: 'لا يمكن تنفيذ هذا الإجراء الآن.',
+  500: 'حدث خطأ في الخادم، حاول بعد قليل.',
+};
+
+function arabicMessage(status: number, problem: ProblemDetail): string {
+  if (status === 0) return problem.detail ?? problem.title ?? '';
+  return (
+    (problem.code && CODE_TEXT[problem.code]) ||
+    STATUS_TEXT[status] ||
+    (status >= 500 ? STATUS_TEXT[500] : 'حدث خطأ غير متوقع، حاول مرة أخرى.')
+  );
 }
 
 const NETWORK_PROBLEM: ProblemDetail = {

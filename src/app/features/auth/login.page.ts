@@ -59,14 +59,14 @@ import { Button } from '@shared/ui/button';
     </section>
 
     <aside
-      class="relative hidden overflow-hidden bg-brand-800 p-12 text-ink-inverse lg:flex lg:flex-col lg:justify-end dark:bg-brand-900"
+      class="relative hidden overflow-hidden bg-linear-to-br from-brand-600 via-brand-700 to-brand-900 p-12 text-white lg:flex lg:flex-col lg:justify-end"
     >
       <div
-        class="absolute -top-32 -left-32 size-96 rounded-full bg-brand-600 opacity-40 blur-3xl"
+        class="absolute -top-32 -left-32 size-96 rounded-full bg-brand-400 opacity-40 blur-3xl"
         aria-hidden="true"
       ></div>
       <div
-        class="absolute -right-24 bottom-24 size-80 rounded-full bg-accent-500 opacity-25 blur-3xl"
+        class="absolute -right-24 bottom-24 size-80 rounded-full bg-accent-400 opacity-30 blur-3xl"
         aria-hidden="true"
       ></div>
       <div class="relative max-w-md">

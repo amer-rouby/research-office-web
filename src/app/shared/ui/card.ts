@@ -3,7 +3,7 @@ import { Component, booleanAttribute, input } from '@angular/core';
 /** Surface for a block of content, with an optional title row (`[actions]` slot on its end). */
 @Component({
   selector: 'ro-card',
-  host: { class: 'block rounded-2xl border bg-surface-raised shadow-sm' },
+  host: { class: 'block rounded-2xl border bg-surface-raised shadow-soft' },
   template: `
     @if (title()) {
       <header class="flex items-center justify-between gap-3 border-b px-5 py-3.5">

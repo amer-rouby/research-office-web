@@ -22,38 +22,63 @@ import { AdminOrdersApi } from './orders/admin-orders.api';
 import { ORDER_COLUMNS } from './orders/order-columns';
 
 /** What needs attention now: each tile opens the list filtered by its status. */
+/** Icon chip colours by meaning. */
+const TONE = {
+  info: 'bg-brand-50 text-primary dark:bg-brand-900',
+  warning: 'bg-warning-soft text-warning',
+  danger: 'bg-danger-soft text-danger',
+  success: 'bg-success-soft text-success',
+};
+
 const TILES: readonly {
   label: string;
   hint: string;
   statuses: OrderStatus[];
   icon: LucideIcon;
+  tone: string;
 }[] = [
-  { label: 'طلبات جديدة', hint: 'تحتاج عرض سعر', statuses: ['NEW'], icon: LucideInbox },
+  {
+    label: 'طلبات جديدة',
+    hint: 'تحتاج عرض سعر',
+    statuses: ['NEW'],
+    icon: LucideInbox,
+    tone: TONE.info,
+  },
   {
     label: 'بانتظار العميل',
     hint: 'عرض سعر لم يُقبل بعد',
     statuses: ['QUOTED'],
     icon: LucideClock,
+    tone: TONE.warning,
   },
   {
     label: 'قيد التنفيذ',
     hint: 'مقبولة أو جارٍ العمل عليها',
     statuses: ['IN_PROGRESS', 'ACCEPTED'],
     icon: LucideHammer,
+    tone: TONE.info,
   },
   {
     label: 'طلبات تعديل',
     hint: 'العميل طلب تعديلًا',
     statuses: ['REVISION'],
     icon: LucideFileWarning,
+    tone: TONE.danger,
   },
   {
     label: 'مراجعة الجودة',
     hint: 'جاهزة للمراجعة قبل التسليم',
     statuses: ['IN_REVIEW'],
     icon: LucideClipboardCheck,
+    tone: TONE.warning,
   },
-  { label: 'تم التسليم', hint: 'بانتظار تأكيد العميل', statuses: ['DELIVERED'], icon: LucideSend },
+  {
+    label: 'تم التسليم',
+    hint: 'بانتظار تأكيد العميل',
+    statuses: ['DELIVERED'],
+    icon: LucideSend,
+    tone: TONE.success,
+  },
 ];
 
 @Component({
@@ -82,11 +107,9 @@ const TILES: readonly {
         <a
           [routerLink]="['/admin/requests']"
           [queryParams]="{ status: t.statuses[0] }"
-          class="group flex items-center gap-4 rounded-2xl border bg-surface-raised p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
+          class="group flex items-center gap-4 rounded-2xl border bg-surface-raised p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lift"
         >
-          <span
-            class="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-primary dark:bg-brand-900"
-          >
+          <span class="grid size-12 shrink-0 place-items-center rounded-xl" [class]="t.tone">
             <svg [lucideIcon]="t.icon" size="22" aria-hidden="true"></svg>
           </span>
           <div class="min-w-0">

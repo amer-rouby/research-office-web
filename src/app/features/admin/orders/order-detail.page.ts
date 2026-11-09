@@ -26,6 +26,7 @@ import { Timeline } from '@shared/ui/timeline';
 import { StaffApi } from '../staff/staff.api';
 import { AdminOrdersApi } from './admin-orders.api';
 import { PaymentsCard } from './payments-card';
+import { Dialogs } from '@shared/ui/dialog.service';
 
 const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
 
@@ -69,7 +70,9 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
     } @else if (order.data(); as o) {
       <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p class="text-sm text-ink-muted" dir="ltr">{{ o.reference }}</p>
+          <p class="text-sm text-ink-muted">
+            <bdi>{{ o.reference }}</bdi>
+          </p>
           <h1 class="mt-1 text-2xl font-bold text-ink">{{ o.serviceName }}</h1>
           <p class="mt-1 text-sm text-ink-subtle">
             أُرسل {{ o.createdAt | roDateTime }}
@@ -132,6 +135,16 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
                 </div>
               </form>
             </ro-card>
+          }
+
+          @if (o.quote; as q) {
+            <ro-payments-card
+              [order]="o"
+              [quote]="q"
+              [busy]="busy()"
+              (add)="run(api.addPayment(id(), $event))"
+              (remove)="run(api.deletePayment(id(), $event.id))"
+            />
           }
 
           <ro-card title="الملفات">
@@ -208,16 +221,6 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
               <ro-copy-button [value]="o.trackingUrl" label="نسخ" />
             </div>
           </ro-card>
-
-          @if (o.quote; as q) {
-            <ro-payments-card
-              [order]="o"
-              [quote]="q"
-              [busy]="busy()"
-              (add)="run(api.addPayment(id(), $event))"
-              (remove)="run(api.deletePayment(id(), $event.id))"
-            />
-          }
 
           <ro-card title="الخبير المسؤول">
             <div class="flex flex-col gap-3">
@@ -303,6 +306,7 @@ export class OrderDetailPage {
   readonly id = input.required<string>();
 
   protected readonly api = inject(AdminOrdersApi);
+  private readonly dialogs = inject(Dialogs);
   private readonly staffApi = inject(StaffApi);
   private readonly staff = createLoader(() => this.staffApi.list('EXPERT'));
   protected readonly experts = computed(() => (this.staff.data() ?? []).filter((x) => x.active));
@@ -317,7 +321,7 @@ export class OrderDetailPage {
   protected readonly uploadKind = signal<FileKind>('DELIVERABLE');
 
   protected readonly quoteForm = inject(NonNullableFormBuilder).group({
-    price: [0, [Validators.required, Validators.min(1)]],
+    price: [null as number | null, [Validators.required, Validators.min(1)]],
     currency: ['QAR', Validators.required],
     note: ['', Validators.maxLength(1000)],
   });
@@ -356,18 +360,27 @@ export class OrderDetailPage {
       return;
     }
     const v = this.quoteForm.getRawValue();
-    this.run(this.api.quote(this.id(), { ...v, note: v.note || null }));
+    this.run(this.api.quote(this.id(), { ...v, price: Number(v.price), note: v.note || null }));
   }
 
   protected move(status: OrderStatus): void {
-    if (status === 'CANCELLED' && !confirm('إلغاء هذا الطلب نهائيًا؟')) return;
-    this.run(
-      this.api.changeStatus(this.id(), {
-        status,
-        note: this.note().trim() || null,
-        visibleToClient: this.visibleToClient(),
-      }),
-    );
+    const change = () =>
+      this.run(
+        this.api.changeStatus(this.id(), {
+          status,
+          note: this.note().trim() || null,
+          visibleToClient: this.visibleToClient(),
+        }),
+      );
+    if (status !== 'CANCELLED') return change();
+    this.dialogs
+      .confirm({
+        title: 'إلغاء الطلب؟',
+        message: 'سيتم إيقاف الطلب نهائيًا ولن يمكن إكماله.',
+        confirmText: 'إلغاء الطلب',
+        danger: true,
+      })
+      .subscribe((ok) => ok && change());
   }
 
   protected saveNote(): void {
@@ -390,8 +403,13 @@ export class OrderDetailPage {
   }
 
   protected publish(file: FileView): void {
-    if (!confirm('إرسال ' + file.name + ' للعميل؟ سيظهر في صفحة متابعته.')) return;
-    this.run(this.api.publish(this.id(), file));
+    this.dialogs
+      .confirm({
+        title: 'إرسال الملف للعميل؟',
+        message: `سيظهر «${file.name}» في صفحة متابعة العميل ويمكنه تحميله.`,
+        confirmText: 'إرسال للعميل',
+      })
+      .subscribe((ok) => ok && this.run(this.api.publish(this.id(), file)));
   }
 
   protected download(file: FileView): void {

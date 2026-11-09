@@ -3,6 +3,24 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.8.0] - 2026-11-09
+
+### Changed
+- New visual identity: royal blue + warm amber on calm surfaces, soft shadows; light landing hero with a live preview of the client tracking card; gradient sign-in panel and call to action.
+- Request page redesigned for speed and trust: 3 numbered steps, reassurance chips (no payment now, quote in 24h, confidential), optional fields folded away, "what happens next" panel, WhatsApp shortcut; success screen with next steps and "send the link to yourself on WhatsApp".
+- Arabic date picker (Saturday-first, month navigation, today, clear) replaces the browser date input in the request form and payments.
+- In-app confirmation/prompt dialogs replace the browser's confirm/prompt (cancel request, send file to client, delete payment, reset password).
+- Every API error is shown in clear Arabic, mapped from the backend error code.
+- Request detail: payments card in the main column with a collapsible "record payment" form; empty quote price by default.
+- Dashboard tiles coloured by meaning; request numbers isolated so they read correctly inside Arabic text; closed requests show every step done.
+
+### Added
+- "دخول الفريق" link in the public header.
+- Local dev proxy: `/api` → backend on port 8190 (`proxy.conf.json`), same origin as production.
+
+### Fixed
+- White text on brand panels (hero, sign-in) was unreadable because the white colour token was missing.
+
 ## [0.7.0] - 2026-11-09
 
 ### Added

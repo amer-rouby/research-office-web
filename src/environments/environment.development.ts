@@ -1,4 +1,4 @@
-/** Local development (`npm start`): the backend runs separately on port 8090. */
+/** Local development (`npm start`): /api is proxied to the backend (proxy.conf.json), like production. */
 export const environment = {
-  apiUrl: 'http://localhost:8090/api',
+  apiUrl: '/api',
 } as const;

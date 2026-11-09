@@ -8,7 +8,7 @@ const BASE =
   'disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-wait';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-on-primary shadow-sm hover:bg-primary-hover',
+  primary: 'bg-primary text-on-primary shadow-soft hover:bg-primary-hover',
   secondary: 'border bg-surface-raised text-ink hover:bg-surface-sunken',
   ghost: 'text-ink-muted hover:bg-surface-sunken hover:text-ink',
   danger: 'bg-danger text-on-primary hover:opacity-90',
