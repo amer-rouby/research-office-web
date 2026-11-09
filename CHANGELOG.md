@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-11-09
+
+### Added
+- Production image: Angular build served by Caddy with automatic HTTPS for `RO_DOMAIN`, `/api` proxied to the backend (same origin, no CORS), `/actuator` hidden, long-cache hashed assets, security headers, SPA fallback.
+
+### Changed
+- `environment.ts` is production (`/api`); local development uses `environment.development.ts`.
+- Production build no longer inlines Google Fonts (builds work without internet access to Google); the font still loads at runtime.
+
 ## [0.3.0] - 2026-11-09
 
 ### Added
