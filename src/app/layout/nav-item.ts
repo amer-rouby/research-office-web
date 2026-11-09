@@ -5,4 +5,6 @@ export interface NavItem {
   readonly label: string;
   readonly path: string;
   readonly icon: LucideIcon;
+  /** Highlight only on an exact URL match (use for an area's home). */
+  readonly exact?: boolean;
 }

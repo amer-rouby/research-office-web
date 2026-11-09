@@ -5,11 +5,25 @@ import { AppFooter } from './app-footer';
 import { Brand } from './brand';
 import { NavItem } from './nav-item';
 import { ThemeToggle } from './theme-toggle';
+import { UserMenu } from './user-menu';
 
-/** Staff shell: side navigation + header + content. Configured by route data. */
+const LINK =
+  'flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink-muted hover:bg-surface-sunken hover:text-ink';
+const ACTIVE = 'bg-brand-50 font-medium !text-primary dark:bg-brand-900';
+
+/** Staff shell: side navigation (top tabs on phones) + header + content. Configured by route data. */
 @Component({
   selector: 'ro-sidebar-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideDynamicIcon, Brand, ThemeToggle, AppFooter],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    LucideDynamicIcon,
+    Brand,
+    ThemeToggle,
+    UserMenu,
+    AppFooter,
+  ],
   host: { class: 'flex min-h-dvh' },
   template: `
     <aside class="hidden w-64 shrink-0 flex-col border-e bg-surface-raised md:flex">
@@ -18,9 +32,9 @@ import { ThemeToggle } from './theme-toggle';
         @for (item of nav(); track item.path) {
           <a
             [routerLink]="item.path"
-            routerLinkActive="bg-brand-50 text-primary dark:bg-brand-900"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-muted hover:bg-surface-sunken hover:text-ink"
+            [routerLinkActive]="active"
+            [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+            [class]="link"
           >
             <svg [lucideIcon]="item.icon" size="18" aria-hidden="true"></svg>
             <span>{{ item.label }}</span>
@@ -29,11 +43,33 @@ import { ThemeToggle } from './theme-toggle';
       </nav>
     </aside>
     <div class="flex min-w-0 flex-1 flex-col">
-      <header class="flex h-16 items-center justify-between border-b bg-surface-raised px-6">
-        <span class="font-medium text-ink">{{ areaTitle() }}</span>
-        <ro-theme-toggle />
+      <header
+        class="flex h-16 items-center justify-between gap-4 border-b bg-surface-raised px-4 sm:px-6"
+      >
+        <div class="md:hidden"><ro-brand /></div>
+        <span class="hidden font-medium text-ink md:inline">{{ areaTitle() }}</span>
+        <div class="flex items-center gap-2">
+          <ro-theme-toggle />
+          <ro-user-menu />
+        </div>
       </header>
-      <main class="flex-1 p-6"><router-outlet /></main>
+      <nav
+        class="flex gap-1 overflow-x-auto border-b bg-surface-raised px-3 py-2 md:hidden"
+        [attr.aria-label]="areaTitle()"
+      >
+        @for (item of nav(); track item.path) {
+          <a
+            [routerLink]="item.path"
+            [routerLinkActive]="active"
+            [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+            [class]="link + ' shrink-0'"
+          >
+            <svg [lucideIcon]="item.icon" size="16" aria-hidden="true"></svg>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+      <main class="flex-1 p-4 sm:p-6"><router-outlet /></main>
       <ro-app-footer />
     </div>
   `,
@@ -41,4 +77,6 @@ import { ThemeToggle } from './theme-toggle';
 export class SidebarLayout {
   readonly areaTitle = input.required<string>();
   readonly nav = input<readonly NavItem[]>([]);
+  protected readonly link = LINK;
+  protected readonly active = ACTIVE;
 }

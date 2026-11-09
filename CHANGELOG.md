@@ -3,6 +3,19 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-11-09
+
+### Added
+- Staff sign-in page (`/login`) with a split brand panel; signed-in users skip it.
+- Auth session (access + refresh token + profile) with automatic refresh-and-retry on 401 and sign-out when the session can no longer be renewed.
+- Role guards: `/admin` for ADMIN, `/expert` for EXPERT or ADMIN; guests are sent to sign in with a `returnUrl`.
+- Shared UI kit: `roButton` (variants, sizes, loading), `ro-form-field` + `roInput` (accessible label/hint/error wiring, Arabic validation messages), `ro-alert`.
+- User menu (initials, name, role, sign-out) in both shells; phone navigation tabs in the admin shell.
+- API types generated from the backend OpenAPI (`core/api/schema.d.ts`) with friendly aliases in `api-types.ts`.
+
+### Changed
+- ProblemDetail now carries the backend `code` and `fields`.
+
 ## [0.1.0] - 2026-11-09
 
 ### Added

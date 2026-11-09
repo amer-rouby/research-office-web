@@ -7,8 +7,10 @@ export interface ProblemDetail {
   readonly status?: number;
   readonly detail?: string;
   readonly instance?: string;
+  /** Stable machine-readable error code from the backend (e.g. BAD_CREDENTIALS, VALIDATION). */
+  readonly code?: string;
   /** Field-level validation errors (backend extension), keyed by field name. */
-  readonly errors?: Readonly<Record<string, string>>;
+  readonly fields?: Readonly<Record<string, string>>;
   readonly [extension: string]: unknown;
 }
 
