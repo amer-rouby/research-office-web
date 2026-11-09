@@ -3,6 +3,13 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-11-09
+
+### Added
+- Request detail: "price and payments" card — quote, paid/remaining progress, received payments (method, date, note), record a payment, delete a mistaken one.
+- Client tracking: paid/remaining progress under the quote once a payment is recorded.
+- Shared `ro-balance` used by both pages.
+
 ## [0.5.0] - 2026-11-09
 
 ### Added
