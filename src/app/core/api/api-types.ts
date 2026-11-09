@@ -36,3 +36,4 @@ export type ExpertTask = Schemas['ExpertTask'];
 export type ExpertTaskDetail = Schemas['ExpertTaskDetail'];
 export type PaymentView = Schemas['PaymentView'];
 export type PaymentRequest = Schemas['PaymentRequest'];
+export type OfficeInfo = Schemas['OfficeInfo'];

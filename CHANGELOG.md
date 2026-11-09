@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] - 2026-11-09
+
+### Added
+- Public website shell (navigation, request button, floating WhatsApp from `/api/public/office`).
+- Landing page (`/`): hero, promises, services by audience, how it works, free tools, track-your-request box, FAQ (states the no-ghostwriting policy), final call to action.
+- Free tools (`/tools`): sample size (Cochran + finite population + response rate), statistical test picker, break-even and payback calculator; each result leads to a pre-filled request or WhatsApp.
+- Request form pre-fill from `?service=CODE&details=...`.
+- SEO: page titles with site name, meta description and Open Graph per route.
+
 ## [0.6.0] - 2026-11-09
 
 ### Added

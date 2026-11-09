@@ -1,16 +1,12 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {
-  LucideBriefcase,
-  LucideCircleCheck,
-  LucideDynamicIcon,
-  LucideGraduationCap,
-} from '@lucide/angular';
+import { LucideCircleCheck, LucideDynamicIcon } from '@lucide/angular';
 import { switchMap, of } from 'rxjs';
-import type { CreatedOrder, ServiceView } from '@core/api/api-types';
+import type { CreatedOrder } from '@core/api/api-types';
 import { createLoader, errorMessage } from '@core/data/loader';
 import { PublicOrdersApi } from '@core/orders/public-orders.api';
+import { groupServices } from '@core/orders/service-groups';
 import { FormField } from '@shared/forms/form-field';
 import { Input } from '@shared/forms/input';
 import { Alert } from '@shared/ui/alert';
@@ -19,11 +15,6 @@ import { Card } from '@shared/ui/card';
 import { CopyButton } from '@shared/ui/copy-button';
 import { FileDrop } from '@shared/ui/file-drop';
 import { LoadError, Loading } from '@shared/ui/state-views';
-
-const GROUPS = [
-  { category: 'ACADEMIC', title: 'خدمات الباحثين والطلاب', icon: LucideGraduationCap },
-  { category: 'BUSINESS', title: 'خدمات الشركات ورواد الأعمال', icon: LucideBriefcase },
-] as const;
 
 @Component({
   selector: 'ro-intake-page',
@@ -43,7 +34,7 @@ const GROUPS = [
     LucideCircleCheck,
   ],
   template: `
-    <div class="mx-auto flex max-w-4xl flex-col gap-8 py-4">
+    <div class="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-10 sm:px-6">
       @if (created(); as done) {
         <ro-card>
           <div class="flex flex-col items-center gap-4 py-6 text-center">
@@ -87,14 +78,14 @@ const GROUPS = [
           <form class="flex flex-col gap-8" [formGroup]="form" (ngSubmit)="submit()" novalidate>
             <section class="flex flex-col gap-5" aria-labelledby="svc-title">
               <h2 id="svc-title" class="text-lg font-semibold text-ink">1. اختر الخدمة</h2>
-              @for (group of groups; track group.category) {
+              @for (group of groups(); track group.category) {
                 <div class="flex flex-col gap-3">
                   <p class="flex items-center gap-2 text-sm font-medium text-ink-muted">
                     <svg [lucideIcon]="group.icon" size="18" aria-hidden="true"></svg>
                     {{ group.title }}
                   </p>
                   <div class="grid gap-3 sm:grid-cols-2">
-                    @for (s of byCategory()[group.category]; track s.id) {
+                    @for (s of group.services; track s.id) {
                       <label
                         class="cursor-pointer rounded-2xl border bg-surface-raised p-4 transition-all hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-brand-50 has-[:checked]:ring-2 has-[:checked]:ring-primary/20 dark:has-[:checked]:bg-brand-900"
                       >
@@ -203,14 +194,13 @@ const GROUPS = [
 export class IntakePage {
   private readonly api = inject(PublicOrdersApi);
 
-  protected readonly groups = GROUPS;
   protected readonly today = new Date().toISOString().slice(0, 10);
   protected readonly services = createLoader(() => this.api.services());
-  protected readonly byCategory = computed(() => {
-    const map: Record<string, ServiceView[]> = { ACADEMIC: [], BUSINESS: [] };
-    for (const s of this.services.data() ?? []) (map[s.category] ??= []).push(s);
-    return map;
-  });
+  protected readonly groups = computed(() => groupServices(this.services.data() ?? []));
+
+  /** Query params from tools/landing: preselect a service by code and prefill the details. */
+  readonly service = input<string>();
+  readonly details = input<string>();
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     serviceId: ['', Validators.required],
@@ -232,6 +222,17 @@ export class IntakePage {
 
   constructor() {
     this.services.reload();
+    effect(() => {
+      const code = this.service();
+      const match = this.services.data()?.find((s) => s.code === code);
+      if (match && !this.form.controls.serviceId.value)
+        this.form.controls.serviceId.setValue(match.id);
+    });
+    effect(() => {
+      const text = this.details();
+      if (text && !this.form.controls.details.value)
+        this.form.controls.details.setValue(text.slice(0, 4000));
+    });
   }
 
   protected submit(): void {
