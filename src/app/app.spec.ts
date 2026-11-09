@@ -145,4 +145,37 @@ describe('app routes', () => {
     expect(text).toContain('مهام جارية (1)');
     expect(text).toContain('RO-2026-0003');
   });
+  it('computes a sample size on the free tool page without login', async () => {
+    const harness = await RouterTestingHarness.create('/tools/sample-size');
+    await harness.fixture.whenStable();
+    const text = harness.routeNativeElement?.textContent ?? '';
+    expect(text).toContain('حاسبة حجم العينة');
+    expect(text).toContain('385');
+  });
+
+  it('prefills the request form from a tool (service code + details)', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/request?service=STAT_ANALYSIS&details=' + encodeURIComponent('حسبت حجم العينة: 385'),
+    );
+    TestBed.inject(HttpTestingController)
+      .match((r) => r.url.endsWith('/public/services'))
+      .forEach((r) =>
+        r.flush([
+          {
+            id: 's1',
+            code: 'STAT_ANALYSIS',
+            category: 'ACADEMIC',
+            nameAr: 'التحليل الإحصائي',
+            nameEn: 'Stats',
+            descriptionAr: 'وصف',
+            active: true,
+            sortOrder: 1,
+          },
+        ]),
+      );
+    await harness.fixture.whenStable();
+    const el = harness.routeNativeElement as HTMLElement;
+    expect((el.querySelector('input[type=radio]') as HTMLInputElement).checked).toBe(true);
+    expect((el.querySelector('textarea') as HTMLTextAreaElement).value).toContain('385');
+  });
 });

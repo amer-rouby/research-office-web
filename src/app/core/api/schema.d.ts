@@ -420,6 +420,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/office": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["office"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/expert/tasks": {
         parameters: {
             query?: never;
@@ -810,6 +826,12 @@ export interface components {
         AssignRequest: {
             /** Format: uuid */
             expertId: string;
+        };
+        OfficeInfo: {
+            name: string;
+            /** @description International number, digits only, e.g. 97455551234 */
+            whatsapp?: string | null;
+            email?: string | null;
         };
         ExpertTask: {
             /** Format: uuid */
@@ -1525,6 +1547,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": string;
+                };
+            };
+        };
+    };
+    office: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OfficeInfo"];
                 };
             };
         };

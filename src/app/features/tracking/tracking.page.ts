@@ -42,7 +42,7 @@ import { Timeline } from '@shared/ui/timeline';
     MoneyPipe,
   ],
   template: `
-    <div class="mx-auto flex max-w-4xl flex-col gap-6 py-2">
+    <div class="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8 sm:px-6">
       @if (order.loading() && !order.data()) {
         <ro-loading />
       } @else if (order.error() && !order.data()) {
