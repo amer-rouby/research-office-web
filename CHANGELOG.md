@@ -3,6 +3,17 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-11-09
+
+### Added
+- Team page (`/admin/experts`): list admins and experts, add a member with a temporary password, activate/deactivate, reset password.
+- Request detail: assign an active expert; send a reviewed internal file to the client in one click (with confirmation).
+- Expert area (`/expert`): current and past tasks, task page with the brief and files (no client contact details), start/resume, upload work (hidden from the client until reviewed), notes, submit for review.
+- `FileDownload` service shared by every authenticated download; role labels in one place.
+
+### Removed
+- Placeholder page (every area now has real screens).
+
 ## [0.4.0] - 2026-11-09
 
 ### Added

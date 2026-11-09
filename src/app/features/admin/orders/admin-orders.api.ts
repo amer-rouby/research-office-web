@@ -1,6 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map } from 'rxjs';
 import { API_URL } from '@core/api/api-url';
 import type {
   FileKind,
@@ -13,7 +12,8 @@ import type {
   QuoteRequest,
   StatusChangeRequest,
 } from '@core/api/api-types';
-import { filesForm, saveBlob } from '@core/files/save-blob';
+import { FileDownload } from '@core/files/file-download.service';
+import { filesForm } from '@core/files/save-blob';
 
 export interface OrderQuery {
   readonly status?: OrderStatus | null;
@@ -25,6 +25,7 @@ export interface OrderQuery {
 @Injectable({ providedIn: 'root' })
 export class AdminOrdersApi {
   private readonly http = inject(HttpClient);
+  private readonly downloads = inject(FileDownload);
   private readonly base = `${inject(API_URL)}/admin/orders`;
 
   list(query: OrderQuery) {
@@ -54,16 +55,22 @@ export class AdminOrdersApi {
     return this.http.post<OrderDetail>(`${this.base}/${id}/notes`, body);
   }
 
+  assign(id: string, expertId: string) {
+    return this.http.post<OrderDetail>(`${this.base}/${id}/assign`, { expertId });
+  }
+
   upload(id: string, kind: FileKind, files: readonly File[]) {
     return this.http.post<OrderDetail>(`${this.base}/${id}/files`, filesForm(files), {
       params: { kind },
     });
   }
 
-  /** Authenticated download (the token is sent by the interceptor), then saved locally. */
+  /** Makes a reviewed internal file visible to the client. */
+  publish(id: string, file: FileView) {
+    return this.http.post<OrderDetail>(`${this.base}/${id}/files/${file.id}/publish`, null);
+  }
+
   download(id: string, file: FileView) {
-    return this.http
-      .get(`${this.base}/${id}/files/${file.id}`, { responseType: 'blob' })
-      .pipe(map((blob) => saveBlob(blob, file.name)));
+    return this.downloads.save(`${this.base}/${id}/files/${file.id}`, file.name);
   }
 }

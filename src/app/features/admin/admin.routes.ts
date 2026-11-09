@@ -2,12 +2,11 @@ import { Routes } from '@angular/router';
 import { LucideClipboardList, LucideLayoutDashboard, LucideUsers } from '@lucide/angular';
 import { NavItem } from '@layout/nav-item';
 import { SidebarLayout } from '@layout/sidebar-layout';
-import { PlaceholderPage } from '@shared/ui/placeholder-page';
 
 const nav: readonly NavItem[] = [
   { label: 'لوحة التحكم', path: '/admin', icon: LucideLayoutDashboard, exact: true },
   { label: 'الطلبات', path: '/admin/requests', icon: LucideClipboardList },
-  { label: 'الخبراء', path: '/admin/experts', icon: LucideUsers },
+  { label: 'الفريق', path: '/admin/experts', icon: LucideUsers },
 ];
 
 export const ADMIN_ROUTES: Routes = [
@@ -34,9 +33,8 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'experts',
-        component: PlaceholderPage,
-        title: 'الخبراء',
-        data: { title: 'الخبراء', description: 'إدارة الخبراء وتخصصاتهم وتوزيع المهام عليهم.' },
+        title: 'الفريق',
+        loadComponent: () => import('./staff/staff.page').then((m) => m.StaffPage),
       },
     ],
   },

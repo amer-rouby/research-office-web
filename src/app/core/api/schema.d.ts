@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/admin/services/{id}": {
+    "/api/admin/staff/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -13,6 +13,22 @@ export interface paths {
         };
         get?: never;
         put: operations["update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["update_1"];
         post?: never;
         delete?: never;
         options?: never;
@@ -100,6 +116,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/expert/tasks/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/expert/tasks/{id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/expert/tasks/{id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["note"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/expert/tasks/{id}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["upload_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/refresh": {
         parameters: {
             query?: never;
@@ -148,6 +228,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list"];
+        put?: never;
+        post: operations["create_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/staff/{id}/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["password"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/orders/{id}/status": {
         parameters: {
             query?: never;
@@ -189,7 +301,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["note"];
+        post: operations["note_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -205,7 +317,39 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["upload_1"];
+        post: operations["upload_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{id}/files/{fileId}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/orders/{id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["assign"];
         delete?: never;
         options?: never;
         head?: never;
@@ -260,6 +404,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/expert/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/expert/tasks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/expert/tasks/{id}/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["download_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/me": {
         parameters: {
             query?: never;
@@ -299,7 +491,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list"];
+        get: operations["list_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -315,7 +507,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["detail"];
+        get: operations["detail_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -331,7 +523,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["download_1"];
+        get: operations["download_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -360,6 +552,21 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UpdateStaffRequest: {
+            fullName: string;
+            active: boolean;
+        };
+        StaffView: {
+            /** Format: uuid */
+            id: string;
+            email: string;
+            fullName: string;
+            /** @enum {string} */
+            role: "ADMIN" | "EXPERT";
+            active: boolean;
+            /** Format: date-time */
+            createdAt: string;
+        };
         ServiceUpdate: {
             nameAr: string;
             nameEn: string;
@@ -445,6 +652,27 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        SubmitRequest: {
+            note?: string | null;
+        };
+        ExpertTaskDetail: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            serviceName: string;
+            /** @enum {string} */
+            status: "NEW" | "QUOTED" | "ACCEPTED" | "IN_PROGRESS" | "IN_REVIEW" | "DELIVERED" | "REVISION" | "CLOSED" | "CANCELLED";
+            details: string;
+            /** Format: date */
+            deadline?: string | null;
+            canStart: boolean;
+            canSubmit: boolean;
+            timeline: components["schemas"]["TimelineEntry"][];
+            files: components["schemas"]["FileView"][];
+        };
+        ExpertNoteRequest: {
+            note: string;
+        };
         RefreshRequest: {
             refreshToken: string;
         };
@@ -468,11 +696,27 @@ export interface components {
             email: string;
             password: string;
         };
+        CreateStaffRequest: {
+            /** Format: email */
+            email: string;
+            fullName: string;
+            password: string;
+            /** @enum {string} */
+            role: "ADMIN" | "EXPERT";
+        };
+        PasswordRequest: {
+            password: string;
+        };
         StatusChangeRequest: {
             /** @enum {string} */
             status: "NEW" | "QUOTED" | "ACCEPTED" | "IN_PROGRESS" | "IN_REVIEW" | "DELIVERED" | "REVISION" | "CLOSED" | "CANCELLED";
             note?: string | null;
             visibleToClient: boolean;
+        };
+        ExpertRef: {
+            /** Format: uuid */
+            id: string;
+            fullName: string;
         };
         OrderDetail: {
             /** Format: uuid */
@@ -493,6 +737,7 @@ export interface components {
             /** Format: date */
             deadline?: string | null;
             quote?: components["schemas"]["Quote"];
+            assignedExpert?: components["schemas"]["ExpertRef"];
             timeline: components["schemas"]["TimelineEntry"][];
             files: components["schemas"]["FileView"][];
             /** Format: date-time */
@@ -506,6 +751,22 @@ export interface components {
         NoteRequest: {
             note: string;
             visibleToClient: boolean;
+        };
+        AssignRequest: {
+            /** Format: uuid */
+            expertId: string;
+        };
+        ExpertTask: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            serviceName: string;
+            /** @enum {string} */
+            status: "NEW" | "QUOTED" | "ACCEPTED" | "IN_PROGRESS" | "IN_REVIEW" | "DELIVERED" | "REVISION" | "CLOSED" | "CANCELLED";
+            /** Format: date */
+            deadline?: string | null;
+            /** Format: date-time */
+            updatedAt: string;
         };
         OrderSummary: {
             /** Format: uuid */
@@ -550,6 +811,32 @@ export interface components {
 export type $defs = Record<string, never>;
 export interface operations {
     update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStaffRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StaffView"];
+                };
+            };
+        };
+    };
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -697,6 +984,108 @@ export interface operations {
             };
         };
     };
+    submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpertTaskDetail"];
+                };
+            };
+        };
+    };
+    start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpertTaskDetail"];
+                };
+            };
+        };
+    };
+    note: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpertNoteRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpertTaskDetail"];
+                };
+            };
+        };
+    };
+    upload_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpertTaskDetail"];
+                };
+            };
+        };
+    };
     refresh: {
         parameters: {
             query?: never;
@@ -767,6 +1156,76 @@ export interface operations {
             };
         };
     };
+    list: {
+        parameters: {
+            query?: {
+                role?: "ADMIN" | "EXPERT";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StaffView"][];
+                };
+            };
+        };
+    };
+    create_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateStaffRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StaffView"];
+                };
+            };
+        };
+    };
+    password: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     status: {
         parameters: {
             query?: never;
@@ -819,7 +1278,7 @@ export interface operations {
             };
         };
     };
-    note: {
+    note_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -845,7 +1304,7 @@ export interface operations {
             };
         };
     };
-    upload_1: {
+    upload_2: {
         parameters: {
             query: {
                 kind: "CLIENT_UPLOAD" | "DELIVERABLE" | "INTERNAL";
@@ -861,6 +1320,55 @@ export interface operations {
                 "multipart/form-data": {
                     files: string[];
                 };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
+    assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignRequest"];
             };
         };
         responses: {
@@ -940,6 +1448,71 @@ export interface operations {
             };
         };
     };
+    list_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpertTask"][];
+                };
+            };
+        };
+    };
+    detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpertTaskDetail"];
+                };
+            };
+        };
+    };
+    download_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
     me: {
         parameters: {
             query?: never;
@@ -980,7 +1553,7 @@ export interface operations {
             };
         };
     };
-    list: {
+    list_2: {
         parameters: {
             query?: {
                 status?: "NEW" | "QUOTED" | "ACCEPTED" | "IN_PROGRESS" | "IN_REVIEW" | "DELIVERED" | "REVISION" | "CLOSED" | "CANCELLED";
@@ -1005,7 +1578,7 @@ export interface operations {
             };
         };
     };
-    detail: {
+    detail_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1027,7 +1600,7 @@ export interface operations {
             };
         };
     };
-    download_1: {
+    download_2: {
         parameters: {
             query?: never;
             header?: never;

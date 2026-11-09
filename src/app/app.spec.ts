@@ -127,6 +127,21 @@ describe('app routes', () => {
   it('renders the expert area for an expert', async () => {
     signIn('EXPERT');
     const harness = await RouterTestingHarness.create('/expert');
-    expect(harness.routeNativeElement?.textContent).toContain('مهامي');
+    TestBed.inject(HttpTestingController)
+      .expectOne((r) => r.url.endsWith('/expert/tasks'))
+      .flush([
+        {
+          id: 't1',
+          reference: 'RO-2026-0003',
+          serviceName: 'التحليل الإحصائي',
+          status: 'IN_PROGRESS',
+          deadline: null,
+          updatedAt: '2026-11-09T10:00:00Z',
+        },
+      ]);
+    await harness.fixture.whenStable();
+    const text = harness.routeNativeElement?.textContent ?? '';
+    expect(text).toContain('مهام جارية (1)');
+    expect(text).toContain('RO-2026-0003');
   });
 });

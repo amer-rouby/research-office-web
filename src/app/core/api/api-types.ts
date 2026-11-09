@@ -27,3 +27,10 @@ export type NoteRequest = Schemas['NoteRequest'];
 export type TimelineEntry = Schemas['TimelineEntry'];
 export type FileView = Schemas['FileView'];
 export type FileKind = FileView['kind'];
+
+export type StaffView = Schemas['StaffView'];
+export type CreateStaffRequest = Schemas['CreateStaffRequest'];
+export type UpdateStaffRequest = Schemas['UpdateStaffRequest'];
+export type ExpertRef = Schemas['ExpertRef'];
+export type ExpertTask = Schemas['ExpertTask'];
+export type ExpertTaskDetail = Schemas['ExpertTaskDetail'];

@@ -2,8 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { LucideLogOut } from '@lucide/angular';
 import { AuthSessionStore } from '@core/auth/auth-session.store';
 import { AuthService } from '@core/auth/auth.service';
-
-const ROLE_LABEL = { ADMIN: 'مدير', EXPERT: 'خبير' } as const;
+import { ROLE_LABEL } from '@core/auth/roles';
 
 /** Signed-in user's initials, name, role and a sign-out button. Renders nothing for guests. */
 @Component({
