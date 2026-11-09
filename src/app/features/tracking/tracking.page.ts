@@ -11,6 +11,7 @@ import { Input } from '@shared/forms/input';
 import { DatePipe, MoneyPipe } from '@shared/pipes/format.pipes';
 import { Alert } from '@shared/ui/alert';
 import { Button } from '@shared/ui/button';
+import { Balance } from '@shared/ui/balance';
 import { Card } from '@shared/ui/card';
 import { FileDrop } from '@shared/ui/file-drop';
 import { FileList } from '@shared/ui/file-list';
@@ -29,6 +30,7 @@ import { Timeline } from '@shared/ui/timeline';
     Button,
     Alert,
     Card,
+    Balance,
     FileDrop,
     FileList,
     ProgressSteps,
@@ -90,6 +92,9 @@ import { Timeline } from '@shared/ui/timeline';
                 <p class="text-3xl font-bold text-ink">{{ q | roMoney }}</p>
                 @if (q.note) {
                   <p class="mt-1 text-sm text-ink-muted">{{ q.note }}</p>
+                }
+                @if (o.paidTotal > 0) {
+                  <ro-balance class="mt-3 min-w-64" [quote]="q" [paid]="o.paidTotal" />
                 }
               </div>
               @if (o.status === 'QUOTED') {

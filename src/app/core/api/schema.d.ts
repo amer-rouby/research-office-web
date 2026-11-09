@@ -292,6 +292,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/orders/{id}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/orders/{id}/notes": {
         parameters: {
             query?: never;
@@ -548,6 +564,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/orders/{id}/payments/{paymentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deletePayment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -647,6 +679,7 @@ export interface components {
             /** Format: date */
             deadline?: string | null;
             quote?: components["schemas"]["Quote"];
+            paidTotal: number;
             timeline: components["schemas"]["TimelineEntry"][];
             files: components["schemas"]["FileView"][];
             /** Format: date-time */
@@ -738,14 +771,36 @@ export interface components {
             deadline?: string | null;
             quote?: components["schemas"]["Quote"];
             assignedExpert?: components["schemas"]["ExpertRef"];
+            paidTotal: number;
+            payments: components["schemas"]["PaymentView"][];
             timeline: components["schemas"]["TimelineEntry"][];
             files: components["schemas"]["FileView"][];
             /** Format: date-time */
             createdAt: string;
         };
+        PaymentView: {
+            /** Format: uuid */
+            id: string;
+            amount: number;
+            currency: string;
+            /** @enum {string} */
+            method: "BANK_TRANSFER" | "CASH" | "PAYPAL" | "WISE" | "WALLET" | "OTHER";
+            /** Format: date */
+            paidOn: string;
+            note?: string | null;
+            recordedBy: string;
+        };
         QuoteRequest: {
             price: number;
             currency: string;
+            note?: string | null;
+        };
+        PaymentRequest: {
+            amount: number;
+            /** @enum {string} */
+            method: "BANK_TRANSFER" | "CASH" | "PAYPAL" | "WISE" | "WALLET" | "OTHER";
+            /** Format: date */
+            paidOn: string;
             note?: string | null;
         };
         NoteRequest: {
@@ -1278,6 +1333,32 @@ export interface operations {
             };
         };
     };
+    recordPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OrderDetail"];
+                };
+            };
+        };
+    };
     note_1: {
         parameters: {
             query?: never;
@@ -1639,6 +1720,29 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["OrderStats"];
+                };
+            };
+        };
+    };
+    deletePayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                paymentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OrderDetail"];
                 };
             };
         };

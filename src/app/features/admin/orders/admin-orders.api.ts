@@ -9,6 +9,7 @@ import type {
   OrderPage,
   OrderStats,
   OrderStatus,
+  PaymentRequest,
   QuoteRequest,
   StatusChangeRequest,
 } from '@core/api/api-types';
@@ -57,6 +58,14 @@ export class AdminOrdersApi {
 
   assign(id: string, expertId: string) {
     return this.http.post<OrderDetail>(`${this.base}/${id}/assign`, { expertId });
+  }
+
+  addPayment(id: string, body: PaymentRequest) {
+    return this.http.post<OrderDetail>(`${this.base}/${id}/payments`, body);
+  }
+
+  deletePayment(id: string, paymentId: string) {
+    return this.http.delete<OrderDetail>(`${this.base}/${id}/payments/${paymentId}`);
   }
 
   upload(id: string, kind: FileKind, files: readonly File[]) {

@@ -13,7 +13,7 @@ import { createLoader, errorMessage } from '@core/data/loader';
 import { STATUS } from '@core/orders/order-status';
 import { FormField } from '@shared/forms/form-field';
 import { Input } from '@shared/forms/input';
-import { DatePipe, DateTimePipe, MoneyPipe } from '@shared/pipes/format.pipes';
+import { DatePipe, DateTimePipe } from '@shared/pipes/format.pipes';
 import { Alert } from '@shared/ui/alert';
 import { Button } from '@shared/ui/button';
 import { Card } from '@shared/ui/card';
@@ -25,6 +25,7 @@ import { StatusBadge } from '@shared/ui/status-badge';
 import { Timeline } from '@shared/ui/timeline';
 import { StaffApi } from '../staff/staff.api';
 import { AdminOrdersApi } from './admin-orders.api';
+import { PaymentsCard } from './payments-card';
 
 const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
 
@@ -49,9 +50,9 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
     LoadError,
     DatePipe,
     DateTimePipe,
-    MoneyPipe,
     LucideArrowRight,
     LucideMessageCircle,
+    PaymentsCard,
   ],
   template: `
     <a
@@ -209,12 +210,13 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
           </ro-card>
 
           @if (o.quote; as q) {
-            <ro-card title="عرض السعر">
-              <p class="text-2xl font-bold text-ink">{{ q | roMoney }}</p>
-              @if (q.note) {
-                <p class="mt-1 text-sm text-ink-muted">{{ q.note }}</p>
-              }
-            </ro-card>
+            <ro-payments-card
+              [order]="o"
+              [quote]="q"
+              [busy]="busy()"
+              (add)="run(api.addPayment(id(), $event))"
+              (remove)="run(api.deletePayment(id(), $event.id))"
+            />
           }
 
           <ro-card title="الخبير المسؤول">
@@ -300,7 +302,7 @@ export class OrderDetailPage {
   /** Route param `:id`. */
   readonly id = input.required<string>();
 
-  private readonly api = inject(AdminOrdersApi);
+  protected readonly api = inject(AdminOrdersApi);
   private readonly staffApi = inject(StaffApi);
   private readonly staff = createLoader(() => this.staffApi.list('EXPERT'));
   protected readonly experts = computed(() => (this.staff.data() ?? []).filter((x) => x.active));
@@ -398,7 +400,7 @@ export class OrderDetailPage {
       .subscribe({ error: (e: unknown) => this.actionError.set(errorMessage(e)) });
   }
 
-  private run(call: Observable<OrderDetail>, after?: () => void): void {
+  protected run(call: Observable<OrderDetail>, after?: () => void): void {
     this.busy.set(true);
     this.actionError.set(null);
     call.subscribe({

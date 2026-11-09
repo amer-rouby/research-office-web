@@ -34,3 +34,5 @@ export type UpdateStaffRequest = Schemas['UpdateStaffRequest'];
 export type ExpertRef = Schemas['ExpertRef'];
 export type ExpertTask = Schemas['ExpertTask'];
 export type ExpertTaskDetail = Schemas['ExpertTaskDetail'];
+export type PaymentView = Schemas['PaymentView'];
+export type PaymentRequest = Schemas['PaymentRequest'];

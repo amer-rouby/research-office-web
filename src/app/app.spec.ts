@@ -77,6 +77,7 @@ describe('app routes', () => {
       clientName: 'محمد',
       deadline: null,
       quote: { price: 450, currency: 'QAR', note: 'خلال 5 أيام' },
+      paidTotal: 0,
       timeline: [],
       files: [],
       createdAt: '2026-11-09T10:00:00Z',
