@@ -43,7 +43,7 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
       </div>
 
       <ng-container result>
-        <div class="rounded-2xl border bg-surface-raised p-6 shadow-sm">
+        <div class="rounded-2xl border bg-surface-raised p-6 shadow-soft">
           @if (result().units !== null) {
             <p class="text-sm text-ink-muted">نقطة التعادل الشهرية</p>
             <p class="mt-1 text-4xl font-bold text-primary">

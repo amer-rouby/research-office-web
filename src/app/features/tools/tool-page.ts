@@ -18,7 +18,7 @@ import { LucideArrowRight } from '@lucide/angular';
     <p class="mt-2 max-w-2xl text-ink-muted">{{ intro() }}</p>
     <div class="mt-8 grid gap-6 lg:grid-cols-5">
       <section
-        class="rounded-2xl border bg-surface-raised p-5 shadow-sm lg:col-span-3"
+        class="rounded-2xl border bg-surface-raised p-5 shadow-soft lg:col-span-3"
         aria-label="المدخلات"
       >
         <ng-content select="[inputs]" />

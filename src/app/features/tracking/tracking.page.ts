@@ -57,7 +57,7 @@ import { Timeline } from '@shared/ui/timeline';
         <header class="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p class="text-sm text-ink-muted">
-              طلب رقم <span dir="ltr">{{ o.reference }}</span>
+              طلب رقم <bdi>{{ o.reference }}</bdi>
             </p>
             <h1 class="mt-1 text-2xl font-bold text-ink">{{ o.serviceName }}</h1>
             <p class="mt-1 text-sm text-ink-subtle">

@@ -118,7 +118,7 @@ const OUTCOMES: Choice<Outcome>[] = [
 
       <ng-container result>
         @if (advice(); as a) {
-          <div class="rounded-2xl border bg-surface-raised p-6 shadow-sm">
+          <div class="rounded-2xl border bg-surface-raised p-6 shadow-soft">
             <p class="flex items-center gap-2 text-sm text-success">
               <svg lucideCheck size="16" aria-hidden="true"></svg> الاختبار المناسب
             </p>

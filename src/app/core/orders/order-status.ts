@@ -89,7 +89,7 @@ const STEP_OF: Record<OrderStatus, number> = {
   REVISION: 2,
   IN_REVIEW: 3,
   DELIVERED: 4,
-  CLOSED: 5,
+  CLOSED: 6,
   CANCELLED: -1,
 };
 export const stepOf = (status: OrderStatus) => STEP_OF[status];

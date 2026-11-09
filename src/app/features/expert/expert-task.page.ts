@@ -54,7 +54,9 @@ import { ExpertTasksApi } from './expert-tasks.api';
     } @else if (task.data(); as t) {
       <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p class="text-sm text-ink-muted" dir="ltr">{{ t.reference }}</p>
+          <p class="text-sm text-ink-muted">
+            <bdi>{{ t.reference }}</bdi>
+          </p>
           <h1 class="mt-1 text-2xl font-bold text-ink">{{ t.serviceName }}</h1>
           @if (t.deadline) {
             <p class="mt-1 text-sm text-ink-subtle">التسليم المطلوب {{ t.deadline | roDate }}</p>
