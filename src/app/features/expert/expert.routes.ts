@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { TopbarLayout } from '@layout/topbar-layout';
-import { PlaceholderPage } from '@shared/ui/placeholder-page';
 
 export const EXPERT_ROUTES: Routes = [
   {
@@ -10,9 +9,14 @@ export const EXPERT_ROUTES: Routes = [
     children: [
       {
         path: '',
-        component: PlaceholderPage,
+        pathMatch: 'full',
         title: 'مهامي',
-        data: { title: 'مهامي', description: 'المهام المسندة إليك ومواعيد تسليمها.' },
+        loadComponent: () => import('./expert-tasks.page').then((m) => m.ExpertTasksPage),
+      },
+      {
+        path: 'tasks/:id',
+        title: 'مهمة',
+        loadComponent: () => import('./expert-task.page').then((m) => m.ExpertTaskPage),
       },
     ],
   },

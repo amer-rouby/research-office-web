@@ -23,6 +23,7 @@ import { FileList } from '@shared/ui/file-list';
 import { LoadError, Loading } from '@shared/ui/state-views';
 import { StatusBadge } from '@shared/ui/status-badge';
 import { Timeline } from '@shared/ui/timeline';
+import { StaffApi } from '../staff/staff.api';
 import { AdminOrdersApi } from './admin-orders.api';
 
 const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
@@ -134,7 +135,12 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
 
           <ro-card title="الملفات">
             @if (o.files.length) {
-              <ro-file-list [files]="o.files" (download)="download($event)" />
+              <ro-file-list
+                [files]="o.files"
+                [canPublish]="true"
+                (download)="download($event)"
+                (publish)="publish($event)"
+              />
             } @else {
               <p class="text-sm text-ink-subtle">لا توجد ملفات.</p>
             }
@@ -211,6 +217,40 @@ const CURRENCIES = ['QAR', 'SAR', 'AED', 'KWD', 'OMR', 'BHD', 'USD', 'EGP'];
             </ro-card>
           }
 
+          <ro-card title="الخبير المسؤول">
+            <div class="flex flex-col gap-3">
+              @if (o.assignedExpert; as e) {
+                <p class="text-sm text-ink">
+                  مُسند إلى <strong>{{ e.fullName }}</strong>
+                </p>
+              } @else {
+                <p class="text-sm text-ink-subtle">لم يُسند لخبير بعد.</p>
+              }
+              @if (experts().length) {
+                <div class="flex gap-2">
+                  <select roInput [(ngModel)]="expertId" aria-label="اختر الخبير">
+                    <option value="">اختر الخبير</option>
+                    @for (x of experts(); track x.id) {
+                      <option [value]="x.id">{{ x.fullName }}</option>
+                    }
+                  </select>
+                  <button
+                    roButton
+                    variant="secondary"
+                    [disabled]="!expertId() || expertId() === o.assignedExpert?.id || busy()"
+                    (click)="assign()"
+                  >
+                    إسناد
+                  </button>
+                </div>
+              } @else {
+                <a routerLink="/admin/experts" class="text-sm text-primary hover:underline"
+                  >أضف خبيرًا أولًا</a
+                >
+              }
+            </div>
+          </ro-card>
+
           <ro-card title="تحديث الطلب">
             <div class="flex flex-col gap-4">
               <ro-form-field label="ملاحظة (اختياري)">
@@ -261,6 +301,10 @@ export class OrderDetailPage {
   readonly id = input.required<string>();
 
   private readonly api = inject(AdminOrdersApi);
+  private readonly staffApi = inject(StaffApi);
+  private readonly staff = createLoader(() => this.staffApi.list('EXPERT'));
+  protected readonly experts = computed(() => (this.staff.data() ?? []).filter((x) => x.active));
+  protected readonly expertId = signal('');
   protected readonly currencies = CURRENCIES;
   protected readonly order = createLoader(() => this.api.detail(this.id()));
   protected readonly busy = signal(false);
@@ -288,6 +332,7 @@ export class OrderDetailPage {
   });
 
   constructor() {
+    this.staff.reload();
     effect(() => {
       this.id();
       this.order.reload();
@@ -336,6 +381,15 @@ export class OrderDetailPage {
     this.run(this.api.upload(this.id(), this.uploadKind(), this.newFiles()), () =>
       this.newFiles.set([]),
     );
+  }
+
+  protected assign(): void {
+    this.run(this.api.assign(this.id(), this.expertId()), () => this.expertId.set(''));
+  }
+
+  protected publish(file: FileView): void {
+    if (!confirm('إرسال ' + file.name + ' للعميل؟ سيظهر في صفحة متابعته.')) return;
+    this.run(this.api.publish(this.id(), file));
   }
 
   protected download(file: FileView): void {
