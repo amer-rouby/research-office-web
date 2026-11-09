@@ -114,6 +114,8 @@ describe('app routes', () => {
         },
         open: 6,
         total: 10,
+        money: [{ currency: 'QAR', collectedThisMonth: 1200, outstanding: 300 }],
+        dueSoon: 1,
       });
     http
       .expectOne((r) => r.url.endsWith('/admin/orders'))

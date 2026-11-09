@@ -99,7 +99,7 @@ export class SampleSizePage {
     const r = this.result();
     const n = Number(this.population()) || 'غير محدد';
     return r
-      ? `حسبت حجم العينة: ${r.sample} مشاركًا (المجتمع ${n}، ثقة ${this.confidence()}%، هامش خطأ ${this.margin()}%). أحتاج تحليلًا إحصائيًا للبيانات.`
+      ? `حسبت حجم العينة: ${r.sample} مشاركًا (المجتمع ${n}، ثقة ${this.confidence()}%، هامش خطأ ${this.margin()}%)، وسأرسل الاستبيان إلى ${r.toInvite} شخصًا. أحتاج تحليلًا إحصائيًا للبيانات.`
       : '';
   });
 }

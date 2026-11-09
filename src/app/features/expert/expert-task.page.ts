@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LucideArrowRight } from '@lucide/angular';
@@ -102,8 +102,8 @@ import { ExpertTasksApi } from './expert-tasks.api';
                 </p>
                 <ro-file-drop [(files)]="newFiles" />
                 @if (newFiles().length) {
-                  <button roButton variant="secondary" [loading]="busy()" (click)="upload()">
-                    رفع
+                  <button roButton type="button" [loading]="busy()" (click)="upload()">
+                    رفع {{ newFiles().length }} ملف
                   </button>
                 }
               </div>
@@ -122,8 +122,14 @@ import { ExpertTasksApi } from './expert-tasks.api';
                 <textarea roInput rows="4" [(ngModel)]="note"></textarea>
               </ro-form-field>
               @if (t.canSubmit) {
+                @if (!hasWork()) {
+                  <p class="rounded-xl bg-warning-soft px-3 py-2 text-xs text-ink">
+                    ارفع ملف عملك أولًا، ثم أرسله للمراجعة.
+                  </p>
+                }
                 <button
                   roButton
+                  [disabled]="!hasWork()"
                   [loading]="busy()"
                   (click)="run(api.submit(id(), note().trim() || null))"
                 >
@@ -152,6 +158,10 @@ export class ExpertTaskPage {
   protected readonly api = inject(ExpertTasksApi);
   protected readonly task = createLoader(() => this.api.detail(this.id()));
   protected readonly busy = signal(false);
+  /** The expert has uploaded at least one work file (required before review). */
+  protected readonly hasWork = computed(() =>
+    (this.task.data()?.files ?? []).some((f) => f.kind === 'INTERNAL'),
+  );
   protected readonly actionError = signal<string | null>(null);
   protected readonly note = signal('');
   protected readonly newFiles = signal<File[]>([]);

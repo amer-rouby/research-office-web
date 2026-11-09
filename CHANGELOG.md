@@ -3,6 +3,24 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.9.0] - 2026-11-09
+
+Fixes from a full walkthrough of every scenario (client, admin, expert).
+
+### Fixed
+- File drop zone: a click near the upload button opened the file chooser and jumped to the top of the page (hidden input was positioned outside the box). Upload buttons now say how many files they send.
+- Public pages never send the staff token, so an expired staff session can no longer break a client page; sessions stay in sync across tabs (rotating refresh tokens no longer sign other tabs out).
+- Staff header and sidebar stay visible while scrolling (sign-out always reachable).
+- Expert dropdown keeps the assigned expert; the button says "تغيير".
+- Request form clears ?service=&details= after sending; sample-size request text includes how many people to invite; tool results stay in view while answering; buttons/radios have accessible names and pressed state.
+
+### Added
+- Guards in the UI: expert cannot submit for review before uploading work; "deliver" stays disabled until a file is sent to the client (with a hint); confirmations before delivering and closing, with a warning when the client still owes money; delivery is the main button at review stage, close/cancel come last.
+- Payments: "record payment" hidden once fully paid, opens pre-filled with the remaining amount and cannot exceed it.
+- Client tracking: "المتبقي عليك" with a WhatsApp link for payment details; confirmation before accepting a quote and a WhatsApp link for questions about it.
+- Dashboard: collected this month and owed by clients (per currency), and requests due within 3 days.
+- Arabic messages for the new backend rules (`NO_WORK_FILES`, `NO_DELIVERABLES`, `PAYMENT_EXCEEDS_BALANCE`) and for min/max form limits.
+
 ## [0.8.0] - 2026-11-09
 
 ### Changed

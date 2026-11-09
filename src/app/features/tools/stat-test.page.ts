@@ -47,7 +47,12 @@ const OUTCOMES: Choice<Outcome>[] = [
         <fieldset class="flex flex-col gap-2">
           <legend class="mb-2 font-semibold text-ink">1. ما هدف التحليل؟</legend>
           @for (c of goals; track c.value) {
-            <button type="button" [class]="option(goal() === c.value)" (click)="pickGoal(c.value)">
+            <button
+              type="button"
+              [class]="option(goal() === c.value)"
+              [attr.aria-pressed]="goal() === c.value"
+              (click)="pickGoal(c.value)"
+            >
               <span class="font-medium">{{ c.label }}</span>
               @if (c.hint) {
                 <span class="block text-xs text-ink-subtle">{{ c.hint }}</span>
@@ -63,6 +68,7 @@ const OUTCOMES: Choice<Outcome>[] = [
               <button
                 type="button"
                 [class]="option(groups() === c.value)"
+                [attr.aria-pressed]="groups() === c.value"
                 (click)="groups.set(c.value)"
               >
                 {{ c.label }}
@@ -75,6 +81,7 @@ const OUTCOMES: Choice<Outcome>[] = [
               <button
                 type="button"
                 [class]="option(design() === c.value)"
+                [attr.aria-pressed]="design() === c.value"
                 (click)="design.set(c.value)"
               >
                 {{ c.label }}
@@ -92,6 +99,7 @@ const OUTCOMES: Choice<Outcome>[] = [
               <button
                 type="button"
                 [class]="option(data() === c.value)"
+                [attr.aria-pressed]="data() === c.value"
                 (click)="data.set(c.value)"
               >
                 {{ c.label }}
@@ -107,6 +115,7 @@ const OUTCOMES: Choice<Outcome>[] = [
               <button
                 type="button"
                 [class]="option(outcome() === c.value)"
+                [attr.aria-pressed]="outcome() === c.value"
                 (click)="outcome.set(c.value)"
               >
                 {{ c.label }}

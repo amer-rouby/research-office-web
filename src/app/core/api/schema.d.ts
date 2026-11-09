@@ -869,6 +869,11 @@ export interface components {
             /** Format: int64 */
             total: number;
         };
+        MoneyStat: {
+            currency: string;
+            collectedThisMonth: number;
+            outstanding: number;
+        };
         OrderStats: {
             byStatus: {
                 [key: string]: number;
@@ -877,6 +882,9 @@ export interface components {
             open: number;
             /** Format: int64 */
             total: number;
+            money: components["schemas"]["MoneyStat"][];
+            /** Format: int64 */
+            dueSoon: number;
         };
     };
     responses: never;

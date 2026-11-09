@@ -1,6 +1,6 @@
 {
   "name": "research-office-web",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false",
     "test:watch": "ng test",
-    "gen:api": "openapi-typescript http://localhost:8090/v3/api-docs -o src/app/core/api/schema.d.ts"
+    "gen:api": "openapi-typescript http://localhost:8190/v3/api-docs -o src/app/core/api/schema.d.ts"
   },
   "private": true,
   "packageManager": "npm@11.16.0",

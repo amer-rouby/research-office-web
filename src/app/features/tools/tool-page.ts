@@ -23,7 +23,11 @@ import { LucideArrowRight } from '@lucide/angular';
       >
         <ng-content select="[inputs]" />
       </section>
-      <section class="flex flex-col gap-4 lg:col-span-2" aria-live="polite" aria-label="النتيجة">
+      <section
+        class="flex flex-col gap-4 lg:sticky lg:top-24 lg:col-span-2 lg:self-start"
+        aria-live="polite"
+        aria-label="النتيجة"
+      >
         <ng-content select="[result]" />
       </section>
     </div>

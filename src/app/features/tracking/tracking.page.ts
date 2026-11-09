@@ -8,7 +8,9 @@ import { CLIENT_STEPS, STATUS, stepOf } from '@core/orders/order-status';
 import { PublicOrdersApi } from '@core/orders/public-orders.api';
 import { FormField } from '@shared/forms/form-field';
 import { Input } from '@shared/forms/input';
-import { DatePipe, MoneyPipe } from '@shared/pipes/format.pipes';
+import { DatePipe, MoneyPipe, formatMoney } from '@shared/pipes/format.pipes';
+import { OfficeStore } from '@core/site/office.store';
+import { Dialogs } from '@shared/ui/dialog.service';
 import { Alert } from '@shared/ui/alert';
 import { Button } from '@shared/ui/button';
 import { Balance } from '@shared/ui/balance';
@@ -98,16 +100,45 @@ import { Timeline } from '@shared/ui/timeline';
                 }
               </div>
               @if (o.status === 'QUOTED') {
-                <button
-                  roButton
-                  size="lg"
-                  [loading]="busy()"
-                  (click)="run(api.acceptQuote(token()))"
-                >
-                  قبول العرض والبدء
-                </button>
+                <div class="flex flex-col items-stretch gap-2 sm:items-end">
+                  <button roButton size="lg" [loading]="busy()" (click)="accept()">
+                    قبول العرض والبدء
+                  </button>
+                  @if (whatsapp(); as link) {
+                    <a
+                      [href]="link"
+                      target="_blank"
+                      rel="noopener"
+                      class="text-center text-sm text-primary hover:underline"
+                    >
+                      عندك سؤال عن العرض؟ كلّمنا على واتساب
+                    </a>
+                  }
+                </div>
               }
             </div>
+            @if (due() > 0 && o.status !== 'QUOTED' && o.status !== 'CANCELLED') {
+              <div
+                class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-warning-soft px-4 py-3 text-sm text-ink"
+              >
+                <span
+                  >المتبقي عليك:
+                  <strong
+                    ><bdi>{{ dueText() }}</bdi></strong
+                  ></span
+                >
+                @if (paymentChat(); as link) {
+                  <a
+                    [href]="link"
+                    target="_blank"
+                    rel="noopener"
+                    class="font-medium text-primary hover:underline"
+                  >
+                    تفاصيل الدفع / أرسلت التحويل
+                  </a>
+                }
+              </div>
+            }
           </ro-card>
         }
 
@@ -168,6 +199,24 @@ export class TrackingPage {
   readonly token = input.required<string>();
 
   protected readonly api = inject(PublicOrdersApi);
+  private readonly office = inject(OfficeStore);
+  private readonly dialogs = inject(Dialogs);
+  /** What the client still owes on the accepted quote. */
+  protected readonly due = computed(() => {
+    const o = this.order.data();
+    return o?.quote ? Math.max(o.quote.price - o.paidTotal, 0) : 0;
+  });
+  protected readonly dueText = computed(() =>
+    formatMoney({ price: this.due(), currency: this.order.data()?.quote?.currency ?? 'QAR' }),
+  );
+  protected readonly whatsapp = computed(() =>
+    this.office.whatsappLink(`سؤال عن عرض السعر للطلب ${this.order.data()?.reference ?? ''}`),
+  );
+  protected readonly paymentChat = computed(() =>
+    this.office.whatsappLink(
+      `بخصوص الدفع للطلب ${this.order.data()?.reference ?? ''} (المتبقي ${this.dueText()})`,
+    ),
+  );
   protected readonly steps = CLIENT_STEPS;
   protected readonly notFoundIcon = LucideFileSearch;
   protected readonly order = createLoader(() => this.api.track(this.token()));
@@ -188,6 +237,17 @@ export class TrackingPage {
       this.token();
       this.order.reload();
     });
+  }
+
+  protected accept(): void {
+    const q = this.order.data()?.quote;
+    this.dialogs
+      .confirm({
+        title: 'قبول عرض السعر؟',
+        message: q ? `بالقبول نبدأ العمل على طلبك بسعر ${formatMoney(q)}.` : undefined,
+        confirmText: 'قبول والبدء',
+      })
+      .subscribe((ok) => ok && this.run(this.api.acceptQuote(this.token())));
   }
 
   protected run(call: Observable<TrackingView>): void {
