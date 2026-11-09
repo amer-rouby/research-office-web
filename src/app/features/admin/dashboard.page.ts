@@ -1,0 +1,147 @@
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import {
+  LucideClipboardCheck,
+  LucideClock,
+  LucideDynamicIcon,
+  LucideFileWarning,
+  LucideHammer,
+  LucideIcon,
+  LucideInbox,
+  LucideSend,
+} from '@lucide/angular';
+import type { OrderStatus, OrderSummary } from '@core/api/api-types';
+import { AuthSessionStore } from '@core/auth/auth-session.store';
+import { createLoader } from '@core/data/loader';
+import { CellDef, DataTable } from '@shared/data-table/data-table';
+import { Card } from '@shared/ui/card';
+import { PageHeader } from '@shared/ui/page-header';
+import { EmptyState, LoadError, Loading } from '@shared/ui/state-views';
+import { StatusBadge } from '@shared/ui/status-badge';
+import { AdminOrdersApi } from './orders/admin-orders.api';
+import { ORDER_COLUMNS } from './orders/order-columns';
+
+/** What needs attention now: each tile opens the list filtered by its status. */
+const TILES: readonly {
+  label: string;
+  hint: string;
+  statuses: OrderStatus[];
+  icon: LucideIcon;
+}[] = [
+  { label: 'طلبات جديدة', hint: 'تحتاج عرض سعر', statuses: ['NEW'], icon: LucideInbox },
+  {
+    label: 'بانتظار العميل',
+    hint: 'عرض سعر لم يُقبل بعد',
+    statuses: ['QUOTED'],
+    icon: LucideClock,
+  },
+  {
+    label: 'قيد التنفيذ',
+    hint: 'مقبولة أو جارٍ العمل عليها',
+    statuses: ['IN_PROGRESS', 'ACCEPTED'],
+    icon: LucideHammer,
+  },
+  {
+    label: 'طلبات تعديل',
+    hint: 'العميل طلب تعديلًا',
+    statuses: ['REVISION'],
+    icon: LucideFileWarning,
+  },
+  {
+    label: 'مراجعة الجودة',
+    hint: 'جاهزة للمراجعة قبل التسليم',
+    statuses: ['IN_REVIEW'],
+    icon: LucideClipboardCheck,
+  },
+  { label: 'تم التسليم', hint: 'بانتظار تأكيد العميل', statuses: ['DELIVERED'], icon: LucideSend },
+];
+
+@Component({
+  selector: 'ro-dashboard-page',
+  imports: [
+    RouterLink,
+    PageHeader,
+    Card,
+    DataTable,
+    CellDef,
+    StatusBadge,
+    Loading,
+    LoadError,
+    EmptyState,
+    LucideDynamicIcon,
+  ],
+  host: { class: 'flex flex-col gap-6' },
+  template: `
+    <ro-page-header [title]="greeting()" subtitle="نظرة سريعة على ما يحتاج متابعتك اليوم." />
+
+    @if (stats.error()) {
+      <ro-load-error [message]="stats.error()!" (retry)="stats.reload()" />
+    }
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      @for (t of tiles(); track t.label) {
+        <a
+          [routerLink]="['/admin/requests']"
+          [queryParams]="{ status: t.statuses[0] }"
+          class="group flex items-center gap-4 rounded-2xl border bg-surface-raised p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
+        >
+          <span
+            class="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-primary dark:bg-brand-900"
+          >
+            <svg [lucideIcon]="t.icon" size="22" aria-hidden="true"></svg>
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm text-ink-muted">{{ t.label }}</p>
+            <p class="text-3xl font-bold text-ink">{{ t.count ?? '—' }}</p>
+            <p class="truncate text-xs text-ink-subtle">{{ t.hint }}</p>
+          </div>
+        </a>
+      }
+    </div>
+
+    <ro-card title="أحدث الطلبات" flush>
+      <a actions routerLink="/admin/requests" class="text-sm text-primary hover:underline"
+        >عرض الكل</a
+      >
+      @if (recent.loading() && !recent.data()) {
+        <div class="p-5"><ro-loading /></div>
+      } @else if (recent.data()?.items?.length) {
+        <ro-data-table [columns]="columns" [rows]="recent.data()!.items" (rowClick)="open($event)">
+          <ng-template roCell="status" let-row
+            ><ro-status-badge [status]="row.status"
+          /></ng-template>
+        </ro-data-table>
+      } @else {
+        <ro-empty-state
+          title="لا توجد طلبات بعد"
+          description="شارك رابط صفحة الطلب مع عملائك لتبدأ الطلبات بالوصول."
+        />
+      }
+    </ro-card>
+  `,
+})
+export class DashboardPage {
+  private readonly api = inject(AdminOrdersApi);
+  private readonly router = inject(Router);
+  private readonly user = inject(AuthSessionStore).user;
+
+  protected readonly columns = ORDER_COLUMNS;
+  protected readonly stats = createLoader(() => this.api.stats());
+  protected readonly recent = createLoader(() => this.api.list({ page: 0, size: 6 }));
+  protected readonly greeting = computed(() => `أهلًا ${this.user()?.fullName ?? ''}`);
+  protected readonly tiles = computed(() => {
+    const by = this.stats.data()?.byStatus;
+    return TILES.map((t) => ({
+      ...t,
+      count: by ? t.statuses.reduce((n, s) => n + (by[s] ?? 0), 0) : undefined,
+    }));
+  });
+
+  constructor() {
+    this.stats.reload();
+    this.recent.reload();
+  }
+
+  protected open(order: OrderSummary): void {
+    void this.router.navigate(['/admin/requests', order.id]);
+  }
+}

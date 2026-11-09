@@ -1,9 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
+import {
+  provideRouter,
+  Router,
+  withComponentInputBinding,
+  withRouterConfig,
+} from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import type { Role } from '@core/api/api-types';
+import type { Role, TrackingView } from '@core/api/api-types';
 import { APP_VERSION } from '@core/app-version';
 import { AuthSessionStore } from '@core/auth/auth-session.store';
 import { routes } from './app.routes';
@@ -20,7 +25,11 @@ describe('app routes', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(routes, withComponentInputBinding()),
+        provideRouter(
+          routes,
+          withComponentInputBinding(),
+          withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+        ),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
@@ -59,9 +68,60 @@ describe('app routes', () => {
     expect(TestBed.inject(Router).url).toBe('/expert');
   });
 
-  it('opens client tracking by token without login', async () => {
+  it('opens client tracking by token without login and shows status, quote and step', async () => {
     const harness = await RouterTestingHarness.create('/t/abc123');
-    expect(harness.routeNativeElement?.textContent).toContain('متابعة طلبك');
+    const view: TrackingView = {
+      reference: 'RO-2026-0007',
+      serviceName: 'التحليل الإحصائي',
+      status: 'QUOTED',
+      clientName: 'محمد',
+      deadline: null,
+      quote: { price: 450, currency: 'QAR', note: 'خلال 5 أيام' },
+      timeline: [],
+      files: [],
+      createdAt: '2026-11-09T10:00:00Z',
+    };
+    const http = TestBed.inject(HttpTestingController);
+    const req = http.expectOne((r) => r.url.endsWith('/public/orders/abc123'));
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush(view);
+    await harness.fixture.whenStable();
+
+    const text = harness.routeNativeElement?.textContent ?? '';
+    expect(text).toContain('RO-2026-0007');
+    expect(text).toContain('بانتظار قبول العرض');
+    expect(text).toContain('قبول العرض والبدء');
+  });
+
+  it('shows the dashboard tiles for an admin', async () => {
+    signIn('ADMIN');
+    const harness = await RouterTestingHarness.create('/admin');
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne((r) => r.url.endsWith('/admin/orders/stats'))
+      .flush({
+        byStatus: {
+          NEW: 3,
+          QUOTED: 1,
+          ACCEPTED: 0,
+          IN_PROGRESS: 2,
+          IN_REVIEW: 0,
+          DELIVERED: 0,
+          REVISION: 0,
+          CLOSED: 4,
+          CANCELLED: 0,
+        },
+        open: 6,
+        total: 10,
+      });
+    http
+      .expectOne((r) => r.url.endsWith('/admin/orders'))
+      .flush({ items: [], page: 0, size: 6, total: 0 });
+    await harness.fixture.whenStable();
+
+    const text = harness.routeNativeElement?.textContent ?? '';
+    expect(text).toContain('طلبات جديدة');
+    expect(text).toContain('لا توجد طلبات بعد');
   });
 
   it('renders the expert area for an expert', async () => {
